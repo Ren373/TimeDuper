@@ -49,7 +49,7 @@
 - [x] SafariのWebインスペクタを使える場合、TimeDuper由来の未処理エラーが連続発生していない
 - [x] SafariのWebインスペクタを使える場合、TimeDuperが外部通信を追加していない
 
-## 結果メモ
+## Phase 0基準版 結果メモ
 
 - 実施日: 2026-08-31
 - 実施者: ユーザー（iPhone実機）
@@ -57,3 +57,28 @@
 - 再現手順: 本チェックリストの全Phase 0項目を実施
 - 画面・URL: iPhone Safari上の `https://www.instagram.com/*`
 - 備考: 全項目の成功報告を受け、`timeduper.user.js` バージョン `0.1.0` をPhase 0基準版として確定
+
+## Phase 0.1 Hardening 回帰テスト
+
+以下は `timeduper.user.js` バージョン `0.1.1` をiPhone実機へ入れた後に実施します。上記のPhase 0全項目も改めて確認してください。
+
+- [x] 既存のPhase 0テスト項目をすべて再実行し、全項目がPASSする
+- [x] DM内の検索UIが消えず、正常に操作できる
+- [x] Profile、Followers、Following等の検索UIが誤って消えない
+- [x] 長時間スクロール後もReelsとExploreのブロックが継続する
+- [x] 主要navが再生成された後もReelsとExploreのブロックが復旧する
+- [x] 同じUserscriptを意図的に二重初期化しようとしてもObserver、イベント、タイマーが増殖しない
+- [x] Safariをバックグラウンドへ移し、復帰した後も正常に動作する
+- [x] バックグラウンド中にURLポーリングが継続しない
+- [x] 長時間利用後も異常なCPU負荷、発熱、バッテリー消費、連続ループがない
+
+## Phase 0.1 Hardening 結果メモ
+
+- 実施日: 2026-09-01
+- 実施者: ユーザー（iPhone実機）
+- 判定: **PASS**
+- iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
+- Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
+- 再現手順: 既存のPhase 0全項目とPhase 0.1 Hardening回帰項目を実施
+- 画面・URL: iPhone Safari上の `https://www.instagram.com/*`
+- 備考: 全回帰項目の成功報告を受け、`timeduper.user.js` バージョン `0.1.1` をPhase 0.1基準版として確定

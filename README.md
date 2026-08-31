@@ -1,6 +1,6 @@
-# TimeDuper Phase 0
+# TimeDuper Phase 0.1
 
-TimeDuper Phase 0は、iPhoneのSafariとUserscriptsで技術的な成立性を確認するための最小プロトタイプです。対象は `https://www.instagram.com/*` だけです。完成版ではありません。
+TimeDuper Phase 0.1は、iPhoneのSafariとUserscriptsで実機検証に成功したPhase 0へ安定化修正を加えた最小プロトタイプです。対象は `https://www.instagram.com/*` だけです。完成版ではありません。
 
 ## すること
 
@@ -9,9 +9,11 @@ TimeDuper Phase 0は、iPhoneのSafariとUserscriptsで技術的な成立性を�
 - Explore（`/explore/`）へのリンクやナビゲーション項目を可能な範囲で非表示にします。
 - Reels URLを直接開いた場合、InstagramのHome (`/`) に置き換えてブロックします。
 - Reelsリンクのクリックを、画面遷移前に止めます。
-- InstagramのSPA遷移をURLイベントと軽量な500ms間隔のURL比較で監視します。
-- DOMの初回走査は1回だけ行い、その後は `MutationObserver` で追加・属性変更された部分だけを再確認します。
+- InstagramのSPA遷移を標準URLイベントと、ページ表示中だけ動く軽量な1.5秒間隔のURL比較で監視します。
+- hrefベースの非表示はCSSへ任せ、ラベル判定用の `MutationObserver` は主要ナビゲーションとその直近親を中心に監視します。主要ナビゲーション探索中のページ全体監視は最長10秒で停止します。
 - Instagramが挿入した対象リンクにはCSSも直接適用するため、DOM再生成後にも非表示を再適用します。
+- `Search` や `検索` という汎用ラベルだけでは要素を非表示にしません。
+- 同じページへ誤って二重注入されても、Observer、イベント、タイマーを重複登録しません。
 
 Exploreは入口を非表示にしますが、Phase 0では `/explore/` への直接アクセス自体はブロックしません。ReelsのURLだけが強制ブロック対象です。
 
@@ -47,7 +49,7 @@ Instagramと通常どおり通信するのはInstagram Web自身です。TimeDup
 - 日本語と英語の代表的なラベルだけに対応しています。他言語や新しい表記はリンク先URLで判定できる場合に限り非表示になります。
 - CSSは対象リンクそのものを隠します。Instagramのレイアウトによっては空白が残ることがあります。
 - Reelsが通常投稿と同じURLや別の新URLで表示された場合はブロックできません。
-- URLの直接入力やInstagram側のプログラム遷移では、Homeへ戻るまで最大約500ms表示される場合があります。
+- URLの直接入力は起動時に確認します。Instagram側のプログラム遷移を標準イベントやDOM変更で検出できない場合、Homeへ戻るまで最大約1.5秒表示される可能性があります。
 - Exploreは非表示だけで、URL直接入力によるアクセスはPhase 0の対象外です。
 - Instagram Webの仕様変更やUserscripts/Safariの制限により動作しなくなる可能性があります。
 - Phase 0では設定画面、解除UI、ログ保存、テレメトリー、ビルド処理はありません。
