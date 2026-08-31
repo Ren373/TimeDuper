@@ -2,6 +2,39 @@
 
 TimeDuperの主な変更をこのファイルに記録します。
 
+## 0.2.0 - 2026-09-01
+
+### Phase 1 Settings
+
+- Phase 0.1のReels / Exploreブロックを個別にON/OFFできる設定を追加
+- 初回値を `Block Reels = ON`、`Block Explore = ON` とし、Phase 0.1と同じ動作を維持
+- InstagramのReactツリーや主要navを改造しない、TimeDuper独立の設定DOMを追加
+- safe-areaを考慮した `TD` ボタン、2スイッチ、`Close` ボタンを追加
+- スイッチ変更を再読み込みなしで反映し、OFF時はTimeDuperの非表示マーカーを解除
+- `StorageAdapter` を追加し、Userscriptsの `GM.getValue` / `GM.setValue` へ保存処理を限定
+- Phase 1向けiPhone実機テスト項目を追加
+
+### Storage and privacy
+
+- 保存キーを `timeduper.settings.v1` の1つに限定
+- 保存値をschema version、`blockReels` boolean、`blockExplore` booleanだけに限定
+- InstagramのlocalStorage、Cookie、IndexedDB、ユーザー名、アカウントID、URL履歴、DM、投稿を保存しない
+- 読み込み失敗または不正形式では、両ブロックONのデフォルトへ戻す
+
+### Security and stability
+
+- 設定保存に必要な `@grant GM.getValue` と `@grant GM.setValue` だけを追加
+- Userscripts公式APIの要件に合わせて `@inject-into content` を明示
+- 外部通信、外部依存、Analytics、Tracking、広告を追加しない
+- Instagram内部API、React内部状態、History API hookを引き続き使用しない
+- Phase 0.1の主要nav限定Observer、低頻度URLフォールバック、二重初期化ガードを維持
+
+### Validated
+
+- iPhone Safari + UserscriptsによるPhase 0 / Phase 0.1回帰およびPhase 1 Settings実機テストの全項目がPASS
+- `timeduper.user.js` バージョン `0.2.0` をPhase 1 Settings正常動作版として確定
+- Gitタグ `phase1-settings-passed` で実機検証済み状態を識別
+
 ## 0.1.1 - 2026-09-01
 
 ### Phase 0.1 Hardening
