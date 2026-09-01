@@ -1,11 +1,13 @@
-# TimeDuper Phase 1.5 — Brand UI
+# TimeDuper Phase 2 — Language Support
 
-TimeDuper Phase 1.5は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 1で実機PASSしたReels / Exploreブロックと端末内設定を変えず、TimeDuper独自の黒・白・ネオングリーンのブランドUIを追加しています。対象は `https://www.instagram.com/*` だけです。
+TimeDuper Phase 2は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 1.5で実機PASSしたReels / ExploreブロックとブランドUIを維持し、TimeDuper UIだけを日本語 / English対応にしています。対象は `https://www.instagram.com/*` だけです。
 
 ## できること
 
 - Instagram Webを開くと自動実行します。
 - 初回は `Block Reels = ON`、`Block Explore = ON` で、Phase 0.1と同じブロック状態になります。
+- 言語の初期値は `Automatic` です。Safariの優先言語が日本語なら日本語、それ以外は英語でTimeDuper UIを表示します。
+- `Automatic`、`English`、`日本語`を切り替えると、再読み込みなしでTimeDuper UI全体へ反映します。Instagram本体の言語は変更しません。
 - 画面右下付近のTDロゴボタンから、TimeDuper独立の設定パネルを開けます。
 - `Block Reels` がONのとき、Reels入口を可能な範囲で非表示にし、`/reel/` と `/reels/` への遷移をHomeへ戻してブロックします。
 - `Block Reels` をOFFにすると、TimeDuperのReels非表示とURLブロックを解除します。
@@ -22,7 +24,7 @@ Exploreは入口だけを非表示にします。`/explore/` の直接URLはブ�
 - 入口は46×46pxのタップ領域を持つTDロゴボタンです。ロゴ表示はタップ領域より小さく分離しています。
 - iPhoneのsafe-areaをCSSの `env(safe-area-inset-*)` で考慮します。
 - パネルはnear-black背景、白文字、ネオングリーンのアクセントで構成します。
-- `QUICK SETTINGS` に `Block Reels` と `Block Explore` の2スイッチを表示します。
+- `QUICK SETTINGS` に `Block Reels`、`Block Explore`、`Language`を表示します。
 - 同じパネル内の説明ビューとして `About TimeDuper`、`How it works`、`Privacy` を表示します。外部ページは開きません。
 - 背景タップ、`Close`、Escapeキーでパネルを閉じられます。
 - 小画面で内容が長い場合は、Instagramページではなくパネル内部だけをスクロールします。
@@ -45,15 +47,16 @@ Exploreは入口だけを非表示にします。`/explore/` の直接URLはブ�
 
 Instagramの `localStorage`、Cookie、IndexedDBは使用しません。保存場所はSafari内のUserscripts拡張が管理する、このUserscript専用ストレージです。Instagramや外部サーバーへ保存・同期しません。
 
-保存キーは `timeduper.settings.v1` の1つだけで、値は次の3項目だけです。
+保存キーは既存ユーザーの設定移行のため `timeduper.settings.v1` の1つを維持し、値は次の4項目だけです。
 
 ```text
-schemaVersion: 1
+schemaVersion: 2
 blockReels: boolean
 blockExplore: boolean
+language: "auto" | "en" | "ja"
 ```
 
-読み込み、形式検証、保存のいずれかに失敗した場合、設定変更を無理に続行せず、起動時は `Block Reels = ON`、`Block Explore = ON` の安全なデフォルトを使います。
+schema version 1の設定は、既存の `blockReels` / `blockExplore` を保持したまま `language: "auto"` を追加してschema version 2へ移行します。移行保存に失敗しても、その実行中は読み取れたReels / Explore設定を維持します。不正形式や未知のschemaでは、`Block Reels = ON`、`Block Explore = ON`、`Language = Automatic` の安全なデフォルトを使います。
 
 ## 保存しない情報
 
@@ -65,7 +68,7 @@ blockExplore: boolean
 
 ## 設定のリセット
 
-`TD` を開き、`Block Reels` と `Block Explore` を両方ONへ戻してください。保存オブジェクトが初期値で上書きされます。スクリプトを無効化しても保存済み設定がUserscripts側に残る場合がありますが、残る内容は上記boolean 2個とschema versionだけです。
+`TD` を開き、`Block Reels` と `Block Explore` を両方ON、`Language` を `Automatic` へ戻してください。保存オブジェクトが初期値で上書きされます。スクリプトを無効化しても保存済み設定がUserscripts側に残る場合がありますが、残る内容は上記boolean 2個、言語値、schema versionだけです。
 
 ## インストール・更新
 
@@ -109,10 +112,11 @@ Instagram Web自身は通常どおりInstagramと通信しますが、TimeDuper�
 - CSSは対象リンク自体を隠すため、Instagramのレイアウトによって空白が残る場合があります。
 - Instagram側のプログラム遷移を標準イベントやDOM変更で即時検出できない場合、ReelsがHomeへ戻るまで最大約1.5秒表示される可能性があります。
 - 保存設定はUserscripts/Safariの拡張データを消去すると失われます。その場合は両方ONへ戻ります。
+- `Automatic` はSafariの優先言語の先頭を確認し、日本語系なら日本語、それ以外は英語にフォールバックします。
 - 非同期の設定読み込みが完了するまで、起動直後にInstagramの入口が短時間見える可能性があります。
 - 固定位置のTDロゴボタンはsafe-areaと下部ナビゲーションを避けていますが、将来のInstagram UI変更では位置調整が必要になる可能性があります。
 - 320px級の小画面や大きな文字設定ではパネル内部のスクロール量が増える可能性があります。
 
 ## 一時停止・削除
 
-Userscriptsで `TimeDuper Phase 0` を無効化するか、`timeduper.user.js` を削除してください。Instagramアカウント側にはTimeDuper設定を保存していません。保存設定も初期値へ戻したい場合は、無効化前に2つのスイッチをONへ戻してください。
+Userscriptsで `TimeDuper Phase 0` を無効化するか、`timeduper.user.js` を削除してください。Instagramアカウント側にはTimeDuper設定を保存していません。保存設定も初期値へ戻したい場合は、無効化前に2つのスイッチをON、言語を `Automatic` へ戻してください。

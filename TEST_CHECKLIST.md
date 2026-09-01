@@ -202,3 +202,55 @@
 - iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
 - Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
 - 備考: Phase 1.5 Brand UIの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.2.5` をPhase 1.5 Brand UI正常動作版として確定
+
+## Phase 2 Language Support 実機テスト
+
+以下は `timeduper.user.js` バージョン `0.3.0` をiPhone実機へ入れた後に実施します。Phase 0 / Phase 0.1 / Phase 1 / Phase 1.5の既存テストも削除せず、回帰確認してください。
+
+### 言語選択・即時反映
+
+- [x] 初回起動時のLanguageが `Automatic` である
+- [x] 日本語を優先言語にしたSafariで、`Automatic` のTimeDuper UIが日本語になる
+- [x] 英語または日本語以外を優先言語にした環境で、`Automatic` のTimeDuper UIが英語になる
+- [x] `English` を手動選択するとTimeDuper UI全体が英語になる
+- [x] `日本語` を手動選択するとTimeDuper UI全体が日本語になる
+- [x] 言語変更がページ再読み込みなしで即時反映される
+- [x] Instagram本体の表示言語は変更されない
+- [x] 言語変更後もTDロゴとPhase 1.5の基本デザインが維持される
+
+### 翻訳範囲
+
+- [x] 設定画面、Quick Settings、Reels / Explore、Language、Closeが選択言語で表示される
+- [x] `About TimeDuper` のタイトル、説明、Backが選択言語で表示される
+- [x] `How it works` のタイトル、説明、Backが選択言語で表示される
+- [x] `Privacy` のタイトル、説明、Backが選択言語で表示される
+- [x] ボタン、スイッチ、言語選択のaria-labelが選択言語へ更新される
+
+### 保存・migration
+
+- [x] 手動言語設定がSafari再読み込み後も保持される
+- [x] 手動言語設定がSafari終了・再起動後も保持される
+- [x] schema version 1の保存データから更新しても、既存のBlock Reels値が保持される
+- [x] schema version 1の保存データから更新しても、既存のBlock Explore値が保持される
+- [x] schema version 1からの移行後、Languageが `Automatic` になる
+- [x] 保存キーは `timeduper.settings.v1` の1つだけである
+- [x] 保存値は `schemaVersion: 2`、boolean 2個、`auto | en | ja`の言語値だけである
+
+### 機能・安定性・セキュリティ回帰
+
+- [x] 各言語設定でBlock ReelsのON/OFFとURLブロックが正常に動作する
+- [x] 各言語設定でBlock ExploreのON/OFFが正常に動作する
+- [x] Home、DM、Stories、Profile、通常投稿が正常に表示・操作できる
+- [x] DM、Followers、Following検索が正常に表示・操作できる
+- [x] SPA遷移後も選択言語が維持され、TimeDuper UIは1個だけである
+- [x] Userscript二重初期化でもUI、Observer、タイマー、イベントが増殖しない
+- [x] TimeDuper由来の外部通信が0件である
+
+## Phase 2 Language Support 結果メモ
+
+- 実施日: 2026-09-02
+- 実施者: ユーザー（iPhone実機）
+- 判定: **PASS**
+- iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
+- Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
+- 備考: Phase 2 Language Supportの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.3.0` をPhase 2 Language Support正常動作版として確定

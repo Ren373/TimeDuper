@@ -2,6 +2,35 @@
 
 TimeDuperの主な変更をこのファイルに記録します。
 
+## 0.3.0 - 2026-09-02
+
+### Phase 2 Language Support
+
+- TimeDuper UIへ `Automatic` / `English` / `日本語` の言語設定を追加
+- `Automatic` はSafariの優先言語が日本語系なら日本語、それ以外は英語を使用
+- 英語・日本語の表示文言を軽量なi18n辞書へ集約し、再読み込みなしの即時反映に対応
+- About、How it works、Privacy、aria-labelを含むTimeDuper UIを翻訳
+- Instagram本体の表示言語、Phase 1.5のロゴ、基本デザインを変更しない
+
+### Storage migration
+
+- 保存schemaをversion 2へ更新し、`language: "auto" | "en" | "ja"` を追加
+- 既存の保存キー `timeduper.settings.v1` とGM storage方式を維持
+- schema version 1からの移行時に `blockReels` / `blockExplore` を保持し、言語だけ `auto` を補完
+- 不正な言語値は `auto`、不正形式または未知schemaは安全な初期値へフォールバック
+
+### Compatibility and security
+
+- Reels / Explore判定、URLブロック、SPA・Observer・URL監視基盤を変更しない
+- 外部通信、外部依存、Analytics、Tracking、Instagram内部APIを追加しない
+- Phase 2向けiPhone実機テスト項目を追加
+
+### Validated
+
+- iPhone Safari + Userscriptsによる既存Phase回帰およびPhase 2 Language Support実機テストの全項目がPASS
+- `timeduper.user.js` バージョン `0.3.0` をPhase 2 Language Support正常動作版として確定
+- Gitタグ `phase2-language-passed` で実機検証済み状態を識別
+
 ## 0.2.5 - 2026-09-02
 
 ### Phase 1.5 Brand UI
