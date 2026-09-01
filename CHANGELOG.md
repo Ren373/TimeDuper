@@ -2,6 +2,39 @@
 
 TimeDuperの主な変更をこのファイルに記録します。
 
+## 0.2.5 - 2026-09-02
+
+### Phase 1.5 Brand UI
+
+- 46×46pxのFloating TD入口を、文字表示から正式TDロゴへ変更
+- near-black、白、ネオングリーンを使った独立設定パネルへ変更
+- `QUICK SETTINGS` と既存の `Block Reels` / `Block Explore` スイッチをブランド化
+- パネル内サブビューとして `About TimeDuper`、`How it works`、`Privacy` を追加
+- 背景タップ、`Close`、Escapeによるパネル終了に対応
+- 小画面ではパネル内部だけを縦スクロールする構成へ変更
+- Instagram navから独立したFloating TD構成を維持
+
+### Brand assets
+
+- 原本PNG 2枚は変更せず `assets/` に保持
+- TDロゴを128×102のindexed PNGへ軽量化し、Floatingボタンとヘッダーに使用
+- フルロゴを280×241のindexed PNGへ軽量化し、Aboutビューに使用
+- 派生画像を `assets/generated/` に分離し、同じ画像をPNG data URIとしてUserscriptへ埋め込み
+- 相対画像パス、外部画像URL、CDN、`@resource`、外部通信へ依存しない
+
+### Compatibility and security
+
+- Reels / Explore判定、URLブロック、StorageAdapter、設定schemaを変更しない
+- MutationObserver、SPA監視、URL監視、初期化ガードを変更しない
+- 外部通信、Analytics、Tracking、広告、Instagram内部APIを追加しない
+- Phase 1.5向けiPhone実機テスト項目を追加
+
+### Validated
+
+- iPhone Safari + UserscriptsによるPhase 0 / Phase 0.1 / Phase 1回帰およびPhase 1.5 Brand UI実機テストの全項目がPASS
+- `timeduper.user.js` バージョン `0.2.5` をPhase 1.5 Brand UI正常動作版として確定
+- Gitタグ `phase1.5-brand-ui-passed` で実機検証済み状態を識別
+
 ## 0.2.0 - 2026-09-01
 
 ### Phase 1 Settings

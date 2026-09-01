@@ -1,12 +1,12 @@
-# TimeDuper Phase 1
+# TimeDuper Phase 1.5 — Brand UI
 
-TimeDuper Phase 1は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 0.1で実機回帰PASSしたReels / Exploreブロックを基準に、2つの機能を個別にON/OFFできる端末内設定を追加しています。対象は `https://www.instagram.com/*` だけです。
+TimeDuper Phase 1.5は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 1で実機PASSしたReels / Exploreブロックと端末内設定を変えず、TimeDuper独自の黒・白・ネオングリーンのブランドUIを追加しています。対象は `https://www.instagram.com/*` だけです。
 
 ## できること
 
 - Instagram Webを開くと自動実行します。
 - 初回は `Block Reels = ON`、`Block Explore = ON` で、Phase 0.1と同じブロック状態になります。
-- 画面右下付近の `TD` ボタンから、TimeDuper独立の設定パネルを開けます。
+- 画面右下付近のTDロゴボタンから、TimeDuper独立の設定パネルを開けます。
 - `Block Reels` がONのとき、Reels入口を可能な範囲で非表示にし、`/reel/` と `/reels/` への遷移をHomeへ戻してブロックします。
 - `Block Reels` をOFFにすると、TimeDuperのReels非表示とURLブロックを解除します。
 - `Block Explore` がONのとき、`/explore/` を指す主要ナビゲーション入口を可能な範囲で非表示にします。
@@ -19,11 +19,25 @@ Exploreは入口だけを非表示にします。`/explore/` の直接URLはブ�
 
 設定UIはInstagramの主要ナビゲーションやReact内部状態を改造せず、`document.body` の直下へTimeDuper独立DOMとして追加します。id/classはすべて `timeduper-` で名前空間化しています。
 
-- 入口は46×46pxの `TD` ボタンです。
+- 入口は46×46pxのタップ領域を持つTDロゴボタンです。ロゴ表示はタップ領域より小さく分離しています。
 - iPhoneのsafe-areaをCSSの `env(safe-area-inset-*)` で考慮します。
-- パネルには `Block Reels`、`Block Explore` の2スイッチと `Close` だけを表示します。
+- パネルはnear-black背景、白文字、ネオングリーンのアクセントで構成します。
+- `QUICK SETTINGS` に `Block Reels` と `Block Explore` の2スイッチを表示します。
+- 同じパネル内の説明ビューとして `About TimeDuper`、`How it works`、`Privacy` を表示します。外部ページは開きません。
+- 背景タップ、`Close`、Escapeキーでパネルを閉じられます。
+- 小画面で内容が長い場合は、Instagramページではなくパネル内部だけをスクロールします。
 - ボタン、ダイアログ、スイッチにはaria属性を設定し、Escキーでも閉じられます。
 - TimeDuper UIにはInstagramへのリンクを置かず、Reels / Explore判定対象にも含めません。
+
+## ブランドアセット
+
+正式な原本は [timeduper-td-logo.png](./assets/timeduper-td-logo.png) と [timeduper-full-logo.png](./assets/timeduper-full-logo.png) に保持し、編集・再圧縮していません。
+
+単一の `timeduper.user.js` だけでiPhoneへ配布できるよう、原本から余白をクロップして縮小したindexed PNGを `assets/generated/` に分離し、同じバイト列をPNG data URIとしてUserscriptへ埋め込んでいます。
+
+- Floatingボタン用: `assets/generated/timeduper-td-logo-128.png`、128×102、5,008 bytes
+- About用: `assets/generated/timeduper-full-logo-280.png`、280×241、25,083 bytes
+- PC相対パス、`file://`、外部画像URL、CDN、`@resource`、`fetch`には依存しません。
 
 ## 保存方式
 
@@ -79,7 +93,7 @@ Userscriptsのバージョンによって追加方法や権限画面の表記が
 
 - TimeDuper自身の外部通信はありません。
 - `fetch`、XHR、WebSocket、EventSource、`sendBeacon`を使用しません。
-- `@require`、`@resource`、CDN、外部JavaScript、外部画像、iframeを使用しません。
+- `@require`、`@resource`、CDN、外部JavaScript、外部画像URL、iframeを使用しません。ブランド画像はローカル生成したPNG data URIです。
 - Cookie、パスワード、認証情報、DM本文、投稿内容を読み取り・収集・保存しません。
 - Analytics、Tracking、広告、自動Like、Follow、自動DMはありません。
 - Instagram内部/private API、React内部状態、`fetch`等のhook、History API hookを使用しません。
@@ -96,7 +110,8 @@ Instagram Web自身は通常どおりInstagramと通信しますが、TimeDuper�
 - Instagram側のプログラム遷移を標準イベントやDOM変更で即時検出できない場合、ReelsがHomeへ戻るまで最大約1.5秒表示される可能性があります。
 - 保存設定はUserscripts/Safariの拡張データを消去すると失われます。その場合は両方ONへ戻ります。
 - 非同期の設定読み込みが完了するまで、起動直後にInstagramの入口が短時間見える可能性があります。
-- 固定位置の `TD` ボタンはsafe-areaと下部ナビゲーションを避けていますが、将来のInstagram UI変更では位置調整が必要になる可能性があります。
+- 固定位置のTDロゴボタンはsafe-areaと下部ナビゲーションを避けていますが、将来のInstagram UI変更では位置調整が必要になる可能性があります。
+- 320px級の小画面や大きな文字設定ではパネル内部のスクロール量が増える可能性があります。
 
 ## 一時停止・削除
 

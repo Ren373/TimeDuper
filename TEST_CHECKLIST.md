@@ -152,3 +152,53 @@
 - iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
 - Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
 - 備考: Phase 1 Settingsの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.2.0` をPhase 1 Settings正常動作版として確定
+
+## Phase 1.5 Brand UI 実機テスト
+
+以下は `timeduper.user.js` バージョン `0.2.5` をiPhone実機へ入れた後に実施します。Phase 0 / Phase 0.1 / Phase 1の既存テストは削除せず、あわせて回帰確認してください。
+
+### Floating TD・パネル
+
+- [x] Floating TDロゴボタンが正常に表示される
+- [x] 小さい表示でもTDロゴを認識でき、ぼやけすぎていない
+- [x] TDロゴの外側を含む約46×46pxのタップ領域を正常に押せる
+- [x] TDロゴボタンがInstagram本来の重要UIを覆わない
+- [x] TDロゴボタンから設定パネルを開ける
+- [x] 背景タップで設定パネルを閉じられる
+- [x] `Close` で設定パネルを閉じられる
+- [x] Escapeキーを利用できる環境では設定パネルを閉じられる
+
+### Settings・説明ビュー
+
+- [x] `Block Reels` スイッチが正常に動作する
+- [x] `Block Explore` スイッチが正常に動作する
+- [x] 両スイッチともOFF → ONが再読み込みなしで即時反映される
+- [x] 変更した設定が正常に保存される
+- [x] `About TimeDuper` を開け、フルロゴと説明が正常に表示される
+- [x] AboutからQuick Settingsへ戻れる
+- [x] `How it works` を開け、説明が正常に表示される
+- [x] How it worksからQuick Settingsへ戻れる
+- [x] `Privacy` を開け、実装事実だけが表示される
+- [x] PrivacyからQuick Settingsへ戻れる
+
+### 小画面・再適用・回帰
+
+- [x] 小画面・縦向き・横向きでレイアウトが画面外へはみ出さない
+- [x] 長い表示ではInstagramページでなく設定パネル内部だけがスクロールする
+- [x] Home、DM、Stories、Profile、通常投稿が正常に表示・操作できる
+- [x] DM、Followers、Following検索が正常に表示・操作できる
+- [x] SPA遷移後もTD UIが1個だけで重複しない
+- [x] Safari再読み込み後もブランドUIが正常に表示される
+- [x] Safariを終了して再起動した後もブランドUIが正常に表示される
+- [x] 再読み込み・Safari再起動後も保存設定が維持される
+- [x] 同じUserscriptを意図的に二重初期化してもUIが重複しない
+- [x] SafariのWebインスペクタでTimeDuper由来の外部通信が0件である
+
+## Phase 1.5 Brand UI 結果メモ
+
+- 実施日: 2026-09-02
+- 実施者: ユーザー（iPhone実機）
+- 判定: **PASS**
+- iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
+- Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
+- 備考: Phase 1.5 Brand UIの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.2.5` をPhase 1.5 Brand UI正常動作版として確定
