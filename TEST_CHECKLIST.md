@@ -254,3 +254,54 @@
 - iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
 - Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
 - 備考: Phase 2 Language Supportの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.3.0` をPhase 2 Language Support正常動作版として確定
+
+## Phase 2.5 Fullscreen UI & Stable Floating TD 実機テスト
+
+以下は `timeduper.user.js` バージョン `0.3.5` をiPhone実機へ入れた後に実施します。Phase 0〜2の既存テストも削除せず、回帰確認してください。
+
+### Stable Floating TD
+
+- [x] Floating TDロゴ入口が1個だけ表示される
+- [x] Floating TDはInstagram本来のnav項目を変更しない
+- [x] Floating TDのタップ領域・aria-labelが正常である
+- [x] Floating TDをタップすると全画面TimeDuper設定が開く
+- [x] スクロール後もFloating TDが同じ画面位置に表示される
+- [x] SPA移動後もFloating TDは1個だけである
+- [x] safe-area環境でFloating TDが重要UIを覆わない
+
+### 全画面UI
+
+- [x] TD入口から全画面設定を開ける
+- [x] 全画面設定がblack / white / neon greenのブランドデザインを維持する
+- [x] `TD logo + TimeDuper`、`QUICK SETTINGS`、`LANGUAGE`、`ABOUT`、`Close`が表示される
+- [x] 全画面表示中にInstagram背面を誤タップ・スクロールしない
+- [x] `Close`で閉じてInstagramへ正常に戻れる
+- [x] Escapeキーを利用できる環境では閉じられる
+- [x] 画面端の背景部分をタップして閉じられる
+- [x] 内容が長い場合は全画面UI内部だけがスクロールする
+- [x] 320×568の画面で横方向にはみ出さず、操作項目へ到達できる
+- [x] 縦向き・横向き・safe-area環境で重要UIが欠けない
+
+### 設定・説明・回帰
+
+- [x] Block ReelsのON/OFFと `/reel/` / `/reels/` ブロックが正常に動作する
+- [x] Block ExploreのON/OFFが正常に動作する
+- [x] Languageの `Automatic` / `English` / `日本語` が正常に動作する
+- [x] About TimeDuperを開き、戻れる
+- [x] How it worksを開き、戻れる
+- [x] Privacyを開き、戻れる
+- [x] reload後もTD入口・全画面UIが正常で設定が保持される
+- [x] Safari終了・再起動後もTD入口・全画面UIが正常で設定が保持される
+- [x] Home、Stories、DM、Profile、通常投稿が正常に表示・操作できる
+- [x] DM、Followers、Following検索が正常に表示・操作できる
+- [x] Userscript二重初期化でもFloating TD、全画面UI、Observer、タイマー、イベントが増殖しない
+- [x] TimeDuper由来の外部通信が0件である
+
+## Phase 2.5 Fullscreen UI & Stable Floating TD 結果メモ
+
+- 実施日: 2026-09-02
+- 実施者: ユーザー実機検証
+- 判定: **PASS**
+- iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
+- Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
+- 備考: Phase 2.5 Fullscreen UI + Stable Floating TDの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.3.5` を正常動作版として確定

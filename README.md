@@ -1,6 +1,6 @@
-# TimeDuper Phase 2 — Language Support
+# TimeDuper Phase 2.5 — Fullscreen UI & Stable Floating TD
 
-TimeDuper Phase 2は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 1.5で実機PASSしたReels / ExploreブロックとブランドUIを維持し、TimeDuper UIだけを日本語 / English対応にしています。対象は `https://www.instagram.com/*` だけです。
+TimeDuper Phase 2.5は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 2で実機PASSしたReels / Exploreブロック、保存、英語・日本語対応を維持し、独立したFloating TD入口と全画面設定画面を提供します。対象は `https://www.instagram.com/*` だけです。
 
 ## できること
 
@@ -8,7 +8,7 @@ TimeDuper Phase 2は、iPhone Safari + Userscripts向けの最小プロトタイ
 - 初回は `Block Reels = ON`、`Block Explore = ON` で、Phase 0.1と同じブロック状態になります。
 - 言語の初期値は `Automatic` です。Safariの優先言語が日本語なら日本語、それ以外は英語でTimeDuper UIを表示します。
 - `Automatic`、`English`、`日本語`を切り替えると、再読み込みなしでTimeDuper UI全体へ反映します。Instagram本体の言語は変更しません。
-- 画面右下付近のTDロゴボタンから、TimeDuper独立の設定パネルを開けます。
+- 画面右下のFloating TDロゴから全画面設定を開けます。
 - `Block Reels` がONのとき、Reels入口を可能な範囲で非表示にし、`/reel/` と `/reels/` への遷移をHomeへ戻してブロックします。
 - `Block Reels` をOFFにすると、TimeDuperのReels非表示とURLブロックを解除します。
 - `Block Explore` がONのとき、`/explore/` を指す主要ナビゲーション入口を可能な範囲で非表示にします。
@@ -19,14 +19,14 @@ Exploreは入口だけを非表示にします。`/explore/` の直接URLはブ�
 
 ## 設定UIの構造
 
-設定UIはInstagramの主要ナビゲーションやReact内部状態を改造せず、`document.body` の直下へTimeDuper独立DOMとして追加します。id/classはすべて `timeduper-` で名前空間化しています。
+全画面設定UIとFloating TD入口は、InstagramのReactツリーや内部状態を改造せず、`document.body` の直下へTimeDuper独立DOMとして追加します。Instagram本来の項目は削除・並べ替えません。id/classはすべて `timeduper-` で名前空間化しています。
 
-- 入口は46×46pxのタップ領域を持つTDロゴボタンです。ロゴ表示はタップ領域より小さく分離しています。
+- Floating TDは46×46pxのタップ領域を持ち、ロゴ表示領域と分離しています。表示入口は常に1個です。
 - iPhoneのsafe-areaをCSSの `env(safe-area-inset-*)` で考慮します。
-- パネルはnear-black背景、白文字、ネオングリーンのアクセントで構成します。
-- `QUICK SETTINGS` に `Block Reels`、`Block Explore`、`Language`を表示します。
+- 全画面UIはnear-black背景、白文字、ネオングリーンのアクセントで構成します。
+- `QUICK SETTINGS`、`LANGUAGE`、`ABOUT`を分けて表示します。
 - 同じパネル内の説明ビューとして `About TimeDuper`、`How it works`、`Privacy` を表示します。外部ページは開きません。
-- 背景タップ、`Close`、Escapeキーでパネルを閉じられます。
+- 画面端の背景、`Close`、Escapeキーで閉じられます。
 - 小画面で内容が長い場合は、Instagramページではなくパネル内部だけをスクロールします。
 - ボタン、ダイアログ、スイッチにはaria属性を設定し、Escキーでも閉じられます。
 - TimeDuper UIにはInstagramへのリンクを置かず、Reels / Explore判定対象にも含めません。

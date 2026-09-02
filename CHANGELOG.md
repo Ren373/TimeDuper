@@ -2,6 +2,29 @@
 
 TimeDuperの主な変更をこのファイルに記録します。
 
+## 0.3.5 - 2026-09-02
+
+### Phase 2.5 Fullscreen UI & Stable Floating TD
+
+- Instagram下部navへのTD統合を廃止し、Instagramから独立したStable Floating TDを常時表示
+- 既存のTimeDuper独立DOMを、safe-area対応の全画面設定UIへ変更
+- `QUICK SETTINGS`、`LANGUAGE`、`ABOUT`を分け、既存の説明ビューと英語・日本語翻訳を維持
+- 全画面表示中はInstagram背面のスクロールと誤操作を抑止し、Close・Escape・画面端で終了可能
+
+### Stability and compatibility
+
+- Floating TDは`position: fixed`とsafe-areaを使用し、スクロール・SPA遷移後も同じ画面位置を維持
+- nav TD専用の処理を削除し、新しいMutationObserver、URLポーリング、timerを追加しない
+- Reels / Explore判定、URLブロック、StorageAdapter、schema v2、v1移行、Automatic言語判定を維持
+- 外部通信、外部依存、Analytics、Tracking、Instagram内部APIを追加しない
+- Phase 2.5向けiPhone実機テスト項目を追加
+
+### Validated
+
+- iPhone Safari + UserscriptsによるPhase 2.5 Fullscreen UI + Stable Floating TD実機テストの全項目がPASS
+- `timeduper.user.js` バージョン `0.3.5` をPhase 2.5正常動作版として確定
+- Gitタグ `phase2.5-fullscreen-floating-passed` で実機検証済み状態を識別
+
 ## 0.3.0 - 2026-09-02
 
 ### Phase 2 Language Support

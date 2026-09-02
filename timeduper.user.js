@@ -1,8 +1,8 @@
 // ==UserScript==
 // @name         TimeDuper Phase 0
 // @namespace    https://github.com/timeduper
-// @version      0.3.0
-// @description  Instagram WebのReelsとExploreを、端末内設定と英語・日本語UIで個別にブロックする実証版
+// @version      0.3.5
+// @description  Instagram WebのReelsとExploreを、端末内設定・多言語全画面UIで個別にブロックする実証版
 // @match        https://www.instagram.com/*
 // @run-at       document-start
 // @inject-into  content
@@ -14,7 +14,7 @@
 (function () {
   'use strict';
 
-  const SCRIPT_NAME = 'TimeDuper Phase 2';
+  const SCRIPT_NAME = 'TimeDuper Phase 2.5';
   const STYLE_ID = 'timeduper-phase1-style';
   const HIDDEN_ATTRIBUTE = 'data-timeduper-hidden';
   const INSTANCE_ATTRIBUTE = 'data-timeduper-phase01-active';
@@ -33,6 +33,8 @@
   const UI_REELS_INPUT_ID = 'timeduper-block-reels';
   const UI_EXPLORE_INPUT_ID = 'timeduper-block-explore';
   const UI_LANGUAGE_SELECT_ID = 'timeduper-language';
+  const UI_MARKER_ATTRIBUTE = 'data-timeduper-ui';
+  const SETTINGS_OPEN_ATTRIBUTE = 'data-timeduper-settings-open';
   const STORAGE_KEY = 'timeduper.settings.v1';
   const SETTINGS_SCHEMA_VERSION = 2;
   const LEGACY_SETTINGS_SCHEMA_VERSION = 1;
@@ -57,6 +59,8 @@
       blockReels: 'Block Reels',
       blockExplore: 'Block Explore',
       language: 'Language',
+      languageSection: 'LANGUAGE',
+      aboutSection: 'ABOUT',
       languageAuto: 'Automatic',
       languageEnglish: 'English',
       languageJapanese: '日本語',
@@ -91,6 +95,8 @@
       blockReels: 'リールをブロック',
       blockExplore: '発見をブロック',
       language: '言語',
+      languageSection: '言語',
+      aboutSection: '情報',
       languageAuto: '自動',
       languageEnglish: 'English',
       languageJapanese: '日本語',
@@ -180,6 +186,12 @@
       display: none !important;
     }
 
+    html[${SETTINGS_OPEN_ATTRIBUTE}="true"],
+    html[${SETTINGS_OPEN_ATTRIBUTE}="true"] body {
+      overflow: hidden !important;
+      overscroll-behavior: none !important;
+    }
+
     #${UI_ROOT_ID} {
       all: initial !important;
       --timeduper-accent: #78ff19;
@@ -266,24 +278,32 @@
       all: initial !important;
       box-sizing: border-box !important;
       position: fixed !important;
-      right: max(12px, env(safe-area-inset-right, 0px)) !important;
-      bottom: calc(126px + env(safe-area-inset-bottom, 0px)) !important;
+      inset: 0 !important;
       z-index: 2 !important;
-      width: min(340px, calc(100vw - 24px)) !important;
-      max-height: calc(100vh - 152px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
-      max-height: calc(100dvh - 152px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px)) !important;
+      width: 100% !important;
+      height: 100vh !important;
+      height: 100dvh !important;
       overflow-x: hidden !important;
       overflow-y: auto !important;
       overscroll-behavior: contain !important;
       -webkit-overflow-scrolling: touch !important;
-      padding: 18px !important;
-      border: 1px solid rgba(120, 255, 25, 0.34) !important;
-      border-radius: 18px !important;
+      padding: calc(18px + env(safe-area-inset-top, 0px)) max(18px, env(safe-area-inset-right, 0px)) calc(18px + env(safe-area-inset-bottom, 0px)) max(18px, env(safe-area-inset-left, 0px)) !important;
+      border: 0 !important;
+      border-radius: 0 !important;
       background: var(--timeduper-panel) !important;
       color: #ffffff !important;
-      box-shadow: 0 18px 48px rgba(0, 0, 0, 0.56), 0 0 18px rgba(120, 255, 25, 0.08) !important;
+      box-shadow: none !important;
       font: 400 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
       pointer-events: auto !important;
+    }
+
+    .timeduper-fullscreen-content {
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: column !important;
+      width: min(560px, 100%) !important;
+      min-height: 100% !important;
+      margin: 0 auto !important;
     }
 
     .timeduper-settings-header {
@@ -323,6 +343,10 @@
       color: var(--timeduper-accent) !important;
       font: 750 11px/1.2 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
       letter-spacing: 1.35px !important;
+    }
+
+    .timeduper-section-label.timeduper-section-spaced {
+      margin-top: 22px !important;
     }
 
     .timeduper-settings-group,
@@ -582,6 +606,7 @@
   let settingsSaveInProgress = false;
   let uiRoot = null;
   let uiMountPending = false;
+  let lastSettingsTrigger = null;
   const pendingNavigationNodes = new Map();
 
   function warn(error) {
@@ -914,7 +939,7 @@
     }
   }
 
-  function openSettingsPanel() {
+  function openSettingsPanel(trigger = null) {
     if (!uiRoot) {
       return;
     }
@@ -930,6 +955,10 @@
     backdrop.hidden = false;
     panel.hidden = false;
     openButton.setAttribute('aria-expanded', 'true');
+    if (document.documentElement) {
+      document.documentElement.setAttribute(SETTINGS_OPEN_ATTRIBUTE, 'true');
+    }
+    lastSettingsTrigger = trigger instanceof HTMLElement ? trigger : openButton;
     if (panel instanceof HTMLElement) {
       focusWithoutScrolling(panel);
     }
@@ -950,8 +979,17 @@
     panel.hidden = true;
     backdrop.hidden = true;
     openButton.setAttribute('aria-expanded', 'false');
+    if (document.documentElement) {
+      document.documentElement.removeAttribute(SETTINGS_OPEN_ATTRIBUTE);
+    }
     showSettingsView(UI_MAIN_VIEW_ID);
-    focusWithoutScrolling(openButton);
+    const focusTarget = lastSettingsTrigger && lastSettingsTrigger.isConnected
+      ? lastSettingsTrigger
+      : openButton;
+    lastSettingsTrigger = null;
+    if (focusTarget instanceof HTMLElement) {
+      focusWithoutScrolling(focusTarget);
+    }
   }
 
   async function updateSetting(key, enabled) {
@@ -1010,13 +1048,18 @@
       return;
     }
 
+    if (event.target.id === UI_PANEL_ID) {
+      closeSettingsPanel();
+      return;
+    }
+
     const button = event.target.closest('button');
     if (!button || !uiRoot || !uiRoot.contains(button)) {
       return;
     }
 
     if (button.id === UI_OPEN_BUTTON_ID) {
-      openSettingsPanel();
+      openSettingsPanel(button);
     } else if (button.id === UI_CLOSE_BUTTON_ID || button.id === UI_BACKDROP_ID) {
       closeSettingsPanel();
     } else if (button.hasAttribute('data-timeduper-view-target')) {
@@ -1203,6 +1246,10 @@
     return view;
   }
 
+  function isTimeDuperUiElement(element) {
+    return element instanceof Element && Boolean(element.closest(`[${UI_MARKER_ATTRIBUTE}]`));
+  }
+
   function handleUiMountReady() {
     uiMountPending = false;
     ensureSettingsUi();
@@ -1231,7 +1278,7 @@
 
     const root = document.createElement('div');
     root.id = UI_ROOT_ID;
-    root.setAttribute('data-timeduper-ui', 'true');
+    root.setAttribute(UI_MARKER_ATTRIBUTE, 'true');
 
     const backdrop = document.createElement('button');
     backdrop.id = UI_BACKDROP_ID;
@@ -1253,6 +1300,7 @@
     panel.id = UI_PANEL_ID;
     panel.hidden = true;
     panel.setAttribute('role', 'dialog');
+    panel.setAttribute('aria-modal', 'true');
     panel.setAttribute('aria-labelledby', UI_TITLE_ID);
     panel.setAttribute('aria-busy', 'false');
     panel.tabIndex = -1;
@@ -1285,12 +1333,19 @@
     settingsGroup.append(
       createSettingsRow(UI_REELS_INPUT_ID, 'blockReels'),
       createSettingsRow(UI_EXPLORE_INPUT_ID, 'blockExplore'),
-      createLanguageRow(),
     );
 
-    const divider = document.createElement('div');
-    divider.className = 'timeduper-section-divider';
-    divider.setAttribute('aria-hidden', 'true');
+    const languageSectionLabel = document.createElement('p');
+    languageSectionLabel.className = 'timeduper-section-label timeduper-section-spaced';
+    setTranslatedText(languageSectionLabel, 'languageSection');
+
+    const languageGroup = document.createElement('div');
+    languageGroup.className = 'timeduper-settings-group';
+    languageGroup.append(createLanguageRow());
+
+    const aboutSectionLabel = document.createElement('p');
+    aboutSectionLabel.className = 'timeduper-section-label timeduper-section-spaced';
+    setTranslatedText(aboutSectionLabel, 'aboutSection');
 
     const menuGroup = document.createElement('div');
     menuGroup.className = 'timeduper-menu-group';
@@ -1300,7 +1355,14 @@
       createMenuButton('privacyTitle', 'openPrivacy', UI_PRIVACY_VIEW_ID),
     );
 
-    mainView.append(sectionLabel, settingsGroup, divider, menuGroup);
+    mainView.append(
+      sectionLabel,
+      settingsGroup,
+      languageSectionLabel,
+      languageGroup,
+      aboutSectionLabel,
+      menuGroup,
+    );
 
     const aboutView = createDetailView(UI_ABOUT_VIEW_ID, 'aboutTitle', {
       logoSource: FULL_LOGO_DATA_URI,
@@ -1334,7 +1396,9 @@
     setTranslatedText(closeButton, 'close');
     setTranslatedAriaLabel(closeButton, 'closeSettings');
 
-    panel.append(
+    const fullscreenContent = document.createElement('div');
+    fullscreenContent.className = 'timeduper-fullscreen-content';
+    fullscreenContent.append(
       header,
       accentLine,
       mainView,
@@ -1343,6 +1407,7 @@
       privacyView,
       closeButton,
     );
+    panel.append(fullscreenContent);
     root.append(backdrop, openButton, panel);
     root.addEventListener('click', handleSettingsUiClick);
     root.addEventListener('change', handleSettingsUiChange);
@@ -1456,6 +1521,13 @@
 
   function reconcileNavigationControl(control, navigationRoot) {
     if (!(control instanceof Element) || !navigationRoot.contains(control)) {
+      return;
+    }
+
+    if (isTimeDuperUiElement(control)) {
+      if (control.hasAttribute(HIDDEN_ATTRIBUTE)) {
+        control.removeAttribute(HIDDEN_ATTRIBUTE);
+      }
       return;
     }
 
@@ -1854,7 +1926,6 @@
       window.cancelAnimationFrame(navigationScanFrame);
       navigationScanFrame = null;
     }
-
     pendingNavigationNodes.clear();
     navigationRoots.forEach(removeMarkersFromRoot);
     navigationRoots.clear();
@@ -1877,6 +1948,7 @@
       uiRoot = null;
     }
     uiMountPending = false;
+    lastSettingsTrigger = null;
 
     const style = document.getElementById(STYLE_ID);
     if (style) {
@@ -1886,6 +1958,7 @@
     if (instanceClaimed && document.documentElement) {
       document.documentElement.removeAttribute(BLOCK_REELS_ATTRIBUTE);
       document.documentElement.removeAttribute(BLOCK_EXPLORE_ATTRIBUTE);
+      document.documentElement.removeAttribute(SETTINGS_OPEN_ATTRIBUTE);
       document.documentElement.removeAttribute(INSTANCE_ATTRIBUTE);
       instanceClaimed = false;
     }
@@ -1914,7 +1987,6 @@
       window.addEventListener('hashchange', handleHistorySignal);
       window.addEventListener('pageshow', handlePageShow);
       window.addEventListener('pagehide', handlePageHide);
-
       startUrlPolling();
     } catch (error) {
       // 初期化に失敗した場合は登録済み処理を解除し、Instagramを通常表示へ戻す。
