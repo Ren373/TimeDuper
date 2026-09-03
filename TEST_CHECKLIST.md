@@ -367,3 +367,84 @@
 - iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
 - Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
 - 備考: Phase 3 Time Controlの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.4.0` を正常動作版として確定
+
+## Phase 4 Usage Insights & BrainHeal 実機テスト
+
+以下は `timeduper.user.js` バージョン `0.5.0` をiPhone実機へ入れて実施します。既存テストも削除せず回帰確認してください。
+
+### Daily Target・保存・migration
+
+- [x] Daily Targetの初期値が60分である
+- [x] Daily Targetを15〜240分の選択肢から変更できる
+- [x] Daily TargetがDaily Limitとは独立している
+- [x] Daily Targetがreload後も保持される
+- [x] Daily TargetがSafari終了・再起動後も保持される
+- [x] schema version 3・4から移行してReels / Explore / Language / Time Control設定が保持される
+- [x] schema version 3・4から移行して日別履歴とlock状態が保持される
+- [x] migration後のDaily Targetが60分になる
+- [x] 保存データの新規項目が`dailyTargetMinutes`と最小限の累積Brain score状態だけである
+- [x] 週次合計が保存されていない
+
+### Today・BrainHeal / BrainRot
+
+- [x] Today usageが秒ではなく分中心で表示される
+- [x] 日次Target 60分・Usage 42分が累積へ`+18`として反映される
+- [x] 日次Target 60分・Usage 78分が累積へ`-18`として反映される
+- [x] Day 1 `+20`、Day 2 `-15`、Day 3 `+10`で`BrainHeal 15`になる
+- [x] 累積が負の場合に絶対値で`BrainRot`表示になる
+- [x] 累積が0の場合に`Balanced 0`になる
+- [x] 今日の差が`Today +10`等として別表示される
+- [x] Daily Target変更で今日の差だけが即時再計算される
+- [x] Daily Target変更後も確定済みの過去日スコアが変わらない
+- [x] 日付切替時に前日スコアが1回だけ累積へ加算される
+- [x] Instagram Webを0分使用した日にDaily Target分が加算される
+- [x] 1日空けて起動した場合、抜けた未使用日が0分として確定される
+- [x] 3日以上空けて起動した場合、開始日以降の未確定日がすべて確定される
+- [x] 未使用日の確定が月を跨いでも正しい
+- [x] 未使用日の確定が年を跨いでも正しい
+- [x] reload・SPA遷移・Safari再起動で前日スコアが重複加算されない
+- [x] Daily Target変更前に昨日までの未確定日が旧Targetで確定される
+- [x] 新しいDaily Targetが変更当日以降だけに適用される
+- [x] 直近14日から日別データが消えても累積確定スコアが保持される
+- [x] Brain Score開始日がlocal dateで保存され、通常の設定変更で変わらない
+- [x] schema v5からのmigrationで既存累積値と最終確定日が保持される
+- [x] 開始日を確実に特定できないmigrationでは当日を開始日とし、推測した過去スコアを作らない
+- [x] BrainHealがneon green、BrainRotがred、Balancedがneutral colorで表示される
+- [x] 色に加えてBrainHeal / BrainRot / Balancedの文字が表示される
+- [x] 日本語・Englishの両方で表示が自然である
+- [x] BrainRotが責める文章や過度に攻撃的な表示になっていない
+
+### This Week・Last Week
+
+- [x] 週が端末のlocal date基準でMonday〜Sundayになる
+- [x] Mondayに今週が正しく開始する
+- [x] Sundayに同じ週の最終日として表示される
+- [x] 月を跨ぐ週でも曜日と日別データが正しい
+- [x] 年を跨ぐ週でも曜日と日別データが正しい
+- [x] This Weekの各曜日と合計が正しい
+- [x] Last Weekの各曜日と合計が正しい
+- [x] This WeekとLast WeekのDifferenceが正しい
+- [x] 今週の未来曜日が`—`で表示される
+- [x] 記録のない過去日を0分として扱っても表示が破綻しない
+- [x] 直近14日分の日別データだけで両週を正常表示できる
+- [x] 外部チャートライブラリなしで軽量バーが表示される
+
+### 回帰・安全性
+
+- [x] Phase 3のforeground/background時間計測が変わっていない
+- [x] Phase 3の15分・10分・5分警告が正常
+- [x] Phase 3のカウントダウン・Daily Limit・lock・Temporary Unlockが正常
+- [x] Reels / Explore / Languageが正常
+- [x] Floating TD / fullscreen UI / About / Privacyが正常
+- [x] 小画面で内部スクロールし、Instagram画面側が誤操作されない
+- [x] SPA遷移後もUI、Observer、timer、listenerが重複しない
+- [x] TimeDuper由来の外部通信が0件である
+
+## Phase 4 Usage Insights & BrainHeal 結果メモ
+
+- 実施日: 2026-09-03
+- 実施者: ユーザー（iPhone実機）
+- 判定: **PASS**
+- iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
+- Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
+- 備考: Phase 4 Usage Insights & cumulative Brain Scoreの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.5.0`、schema version `6`を正常動作版として確定

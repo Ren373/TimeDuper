@@ -1,6 +1,6 @@
-# TimeDuper Phase 3 — Time Control
+# TimeDuper Phase 4 — Usage Insights & BrainHeal
 
-TimeDuper Phase 3は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 2.5までの機能を維持し、Safari上でInstagram Webが表示されている時間の日次集計・上限・一時解除を端末内で管理します。対象は `https://www.instagram.com/*` だけです。
+TimeDuper Phase 4は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 3までの機能を維持し、端末内に保存したInstagram Webの日別利用時間から今日・今週・先週の利用状況を表示します。対象は `https://www.instagram.com/*` だけです。
 
 ## できること
 
@@ -12,6 +12,10 @@ TimeDuper Phase 3は、iPhone Safari + Userscripts向けの最小プロトタイ
 - `Daily Limit`は初期OFF、上限は60分、一時解除は5分です。
 - Daily LimitがONの場合、残り15分・10分・5分で各1回警告し、残り5分以下は画面上部にカウントダウンを表示します。
 - 上限到達時は独立したロック画面でInstagram操作を止め、ロック開始5分後に当日1回だけ設定時間の一時解除を利用できます。
+- `Daily Target`は初期60分で、Daily Limitとは独立した利用目標として保存します。
+- Brain Score記録開始日以降、各日の`Daily Target − 利用分数`を日次スコアとして確定し、累積が正なら`BrainHeal`、負なら`BrainRot`、0なら`Balanced`として表示します。Instagram Webを開かなかった日は利用0分として扱い、今日の差は小さく別表示します。
+- Daily Targetの変更は今日の差へ即時反映しますが、確定済みの過去日スコアは書き換えません。
+- 既存の直近14日の日別秒数から、Monday〜Sundayの今週・先週バーと週合計・差を計算します。今週の未来日は`—`で表示します。
 - `Block Reels` がONのとき、Reels入口を可能な範囲で非表示にし、`/reel/` と `/reels/` への遷移をHomeへ戻してブロックします。
 - `Block Reels` をOFFにすると、TimeDuperのReels非表示とURLブロックを解除します。
 - `Block Explore` がONのとき、`/explore/` を指す主要ナビゲーション入口を可能な範囲で非表示にします。
@@ -27,7 +31,7 @@ Exploreは入口だけを非表示にします。`/explore/` の直接URLはブ�
 - Floating TDは46×46pxのタップ領域を持ち、ロゴ表示領域と分離しています。表示入口は常に1個です。
 - iPhoneのsafe-areaをCSSの `env(safe-area-inset-*)` で考慮します。
 - 全画面UIはnear-black背景、白文字、ネオングリーンのアクセントで構成します。
-- `QUICK SETTINGS`、`TIME CONTROL`、`LANGUAGE`、`ABOUT`を分けて表示します。
+- `QUICK SETTINGS`、`TIME CONTROL`、`USAGE / INSIGHTS`、`LANGUAGE`、`ABOUT`を分けて表示します。
 - 同じパネル内の説明ビューとして `About TimeDuper`、`How it works`、`Privacy` を表示します。外部ページは開きません。
 - 画面端の背景、`Close`、Escapeキーで閉じられます。
 - 小画面で内容が長い場合は、Instagramページではなくパネル内部だけをスクロールします。
@@ -53,13 +57,19 @@ Instagramの `localStorage`、Cookie、IndexedDBは使用しません。保存�
 保存キーは既存ユーザーの設定移行のため `timeduper.settings.v1` の1つを維持し、値は次の項目だけです。
 
 ```text
-schemaVersion: 3
+schemaVersion: 6
 blockReels: boolean
 blockExplore: boolean
 language: "auto" | "en" | "ja"
 dailyLimitEnabled: boolean
 dailyLimitMinutes: 15 | 30 | 45 | 60 | 90 | 120 | 180 | 240
 temporaryUnlockMinutes: 5 | 10 | 15
+dailyTargetMinutes: 15 | 30 | 45 | 60 | 90 | 120 | 180 | 240
+brainScoreState: {
+  cumulativeFinalizedMinutes: signed integer
+  lastFinalizedDate: "YYYY-MM-DD" | ""
+  brainScoreStartDate: "YYYY-MM-DD"
+}
 usageByDate: { "YYYY-MM-DD": non-negative seconds }
 timeControlState: {
   date: "YYYY-MM-DD"
@@ -70,7 +80,7 @@ timeControlState: {
 }
 ```
 
-schema version 1・2から、既存の `blockReels` / `blockExplore` / `language` を保持してversion 3へ移行します。日別履歴は将来の週次表示に使えるよう日付キーで保持し、端末負荷と保存量を抑えるため直近14日へ整理します。不正形式や未知schemaでは既存ブロックON、言語Automatic、Daily Limit OFFの安全な初期値を使います。
+schema version 1〜5から、既存の `blockReels` / `blockExplore` / `language` / Time Control設定 / 日別履歴 / lock状態 / Daily Target / 累積確定スコアを保持してversion 6へ移行します。Brain Score開始日を確実に復元できない旧schemaでは、migration日のlocal dateを開始日にして既存累積値を保持し、推測した過去スコアは作りません。開始日以降は最終確定日の翌日から昨日までをすべて確定するため、未使用日も0分使用としてDaily Target分を加算します。日別履歴は直近14日へ整理し、それ以前は累積値として維持します。週次集計は保存せず表示時に計算します。
 
 ## 保存しない情報
 
@@ -78,11 +88,11 @@ schema version 1・2から、既存の `blockReels` / `blockExplore` / `language
 - DM本文、投稿本文、投稿画像、Stories、閲覧内容
 - 現在URL、URL履歴、閲覧履歴
 - Analytics、Tracking、広告識別子
-- 上記設定とInstagram Webの日別使用秒数・最小限のロック状態以外のInstagramデータ
+- 上記設定、Instagram Webの日別使用秒数、最小限のロック状態、累積スコア状態以外のInstagramデータ
 
 ## 設定のリセット
 
-`TD` を開き、`Block Reels` と `Block Explore` を両方ON、`Language` を `Automatic`、`Daily Limit`をOFF、上限60分、一時解除5分へ戻してください。日別使用時間も完全に消去する場合はUserscripts側でTimeDuperの保存データを削除してください。
+`TD` を開き、`Block Reels` と `Block Explore` を両方ON、`Language` を `Automatic`、`Daily Limit`をOFF、上限60分、一時解除5分、`Daily Target`を60分へ戻してください。日別使用時間も完全に消去する場合はUserscripts側でTimeDuperの保存データを削除してください。
 
 ## インストール・更新
 
@@ -105,6 +115,7 @@ Userscriptsのバージョンによって追加方法や権限画面の表記が
 - URL比較は標準イベントを優先し、1.5秒ポーリングは最終フォールバックです。ページがhiddenの間は停止します。
 - 使用時間はこの既存周期とvisibility/page lifecycleイベントを再利用し、timestamp差分を最大10秒ずつ加算します。hidden中は加算しません。
 - 使用時間は約15秒ごと、およびbackground移行時に保存します。専用の新しいintervalやMutationObserverは追加しません。
+- Usage InsightsはPhase 3の日別秒数を読み取り、端末のlocal dateとMonday始まりの週境界から画面表示時に計算します。新しい計測処理やタイマーは追加しません。
 - 警告は前回残り時間から15分・10分・5分の閾値を跨いだときだけ、その日1回表示します。初回ロード時点ですでに閾値以下の場合は、過去の警告を遡って表示せず現在値を基準にします。
 - 残り5分以下だけ、timestampから表示値を再計算する軽量な約1秒のone-shot timeoutを使用します。Safariの描画が遅れた場合は正しい残り時間へ追いつきます。
 - 同じページへ二重注入されても、UI、Observer、イベント、タイマーを重複初期化しません。

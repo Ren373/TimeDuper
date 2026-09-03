@@ -2,6 +2,22 @@
 
 TimeDuperの主な変更をこのファイルに記録します。
 
+## 0.5.0 - 2026-09-03
+
+### Phase 4 Usage Insights & BrainHeal
+
+- 全画面UIへ`USAGE / INSIGHTS`を追加し、今日の利用時間、Daily Target、累積BrainHeal / BrainRotを英語・日本語で表示
+- Daily TargetをDaily Limitから独立した15〜240分の設定として追加。初期値は60分
+- 既存の直近14日日別秒数からMonday〜SundayのThis Week / Last Weekバー、週合計、差を都度計算
+- 今週の未来曜日は実績0分と誤認しないよう`—`で表示
+- Brain Score開始日以降、Instagram Webを開かなかった日も0分使用として`Daily Target − Usage`を日付切替時に一度だけ確定
+- schema version 6へ更新し、version 1〜5の既存設定・日別履歴・lock状態・Daily Target・累積確定スコアを保持して移行
+- 14日以前のスコアを維持するため、累積確定分・最終確定日・Brain Score開始日だけを保存。週次集計は保存しない
+- Daily Target変更前に昨日までの未確定日を旧Targetで確定し、新Targetは変更当日以降へ適用
+- BrainHealはneon green、BrainRotはred、Balancedはneutral colorとし、文字ラベルも常時表示
+- Phase 3の時間計測、警告、カウントダウン、Daily Limit、lock、Temporary Unlockを変更しない
+- iPhone実機でPhase 4 Usage Insights & cumulative Brain Scoreの全テスト項目がPASS
+
 ## 0.4.0 - 2026-09-02
 
 ### Phase 3 Time Control
