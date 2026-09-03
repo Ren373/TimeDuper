@@ -1,6 +1,6 @@
-# TimeDuper Phase 2.5 — Fullscreen UI & Stable Floating TD
+# TimeDuper Phase 3 — Time Control
 
-TimeDuper Phase 2.5は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 2で実機PASSしたReels / Exploreブロック、保存、英語・日本語対応を維持し、独立したFloating TD入口と全画面設定画面を提供します。対象は `https://www.instagram.com/*` だけです。
+TimeDuper Phase 3は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 2.5までの機能を維持し、Safari上でInstagram Webが表示されている時間の日次集計・上限・一時解除を端末内で管理します。対象は `https://www.instagram.com/*` だけです。
 
 ## できること
 
@@ -9,6 +9,9 @@ TimeDuper Phase 2.5は、iPhone Safari + Userscripts向けの最小プロトタ�
 - 言語の初期値は `Automatic` です。Safariの優先言語が日本語なら日本語、それ以外は英語でTimeDuper UIを表示します。
 - `Automatic`、`English`、`日本語`を切り替えると、再読み込みなしでTimeDuper UI全体へ反映します。Instagram本体の言語は変更しません。
 - 画面右下のFloating TDロゴから全画面設定を開けます。
+- `Daily Limit`は初期OFF、上限は60分、一時解除は5分です。
+- Daily LimitがONの場合、残り15分・10分・5分で各1回警告し、残り5分以下は画面上部にカウントダウンを表示します。
+- 上限到達時は独立したロック画面でInstagram操作を止め、ロック開始5分後に当日1回だけ設定時間の一時解除を利用できます。
 - `Block Reels` がONのとき、Reels入口を可能な範囲で非表示にし、`/reel/` と `/reels/` への遷移をHomeへ戻してブロックします。
 - `Block Reels` をOFFにすると、TimeDuperのReels非表示とURLブロックを解除します。
 - `Block Explore` がONのとき、`/explore/` を指す主要ナビゲーション入口を可能な範囲で非表示にします。
@@ -24,7 +27,7 @@ Exploreは入口だけを非表示にします。`/explore/` の直接URLはブ�
 - Floating TDは46×46pxのタップ領域を持ち、ロゴ表示領域と分離しています。表示入口は常に1個です。
 - iPhoneのsafe-areaをCSSの `env(safe-area-inset-*)` で考慮します。
 - 全画面UIはnear-black背景、白文字、ネオングリーンのアクセントで構成します。
-- `QUICK SETTINGS`、`LANGUAGE`、`ABOUT`を分けて表示します。
+- `QUICK SETTINGS`、`TIME CONTROL`、`LANGUAGE`、`ABOUT`を分けて表示します。
 - 同じパネル内の説明ビューとして `About TimeDuper`、`How it works`、`Privacy` を表示します。外部ページは開きません。
 - 画面端の背景、`Close`、Escapeキーで閉じられます。
 - 小画面で内容が長い場合は、Instagramページではなくパネル内部だけをスクロールします。
@@ -47,28 +50,39 @@ Exploreは入口だけを非表示にします。`/explore/` の直接URLはブ�
 
 Instagramの `localStorage`、Cookie、IndexedDBは使用しません。保存場所はSafari内のUserscripts拡張が管理する、このUserscript専用ストレージです。Instagramや外部サーバーへ保存・同期しません。
 
-保存キーは既存ユーザーの設定移行のため `timeduper.settings.v1` の1つを維持し、値は次の4項目だけです。
+保存キーは既存ユーザーの設定移行のため `timeduper.settings.v1` の1つを維持し、値は次の項目だけです。
 
 ```text
-schemaVersion: 2
+schemaVersion: 3
 blockReels: boolean
 blockExplore: boolean
 language: "auto" | "en" | "ja"
+dailyLimitEnabled: boolean
+dailyLimitMinutes: 15 | 30 | 45 | 60 | 90 | 120 | 180 | 240
+temporaryUnlockMinutes: 5 | 10 | 15
+usageByDate: { "YYYY-MM-DD": non-negative seconds }
+timeControlState: {
+  date: "YYYY-MM-DD"
+  warnedThresholds: subset of [15, 10, 5]
+  lockStartedAt: local timestamp | null
+  temporaryUnlockUsed: boolean
+  temporaryUnlockUntil: local timestamp | null
+}
 ```
 
-schema version 1の設定は、既存の `blockReels` / `blockExplore` を保持したまま `language: "auto"` を追加してschema version 2へ移行します。移行保存に失敗しても、その実行中は読み取れたReels / Explore設定を維持します。不正形式や未知のschemaでは、`Block Reels = ON`、`Block Explore = ON`、`Language = Automatic` の安全なデフォルトを使います。
+schema version 1・2から、既存の `blockReels` / `blockExplore` / `language` を保持してversion 3へ移行します。日別履歴は将来の週次表示に使えるよう日付キーで保持し、端末負荷と保存量を抑えるため直近14日へ整理します。不正形式や未知schemaでは既存ブロックON、言語Automatic、Daily Limit OFFの安全な初期値を使います。
 
 ## 保存しない情報
 
 - Instagramユーザー名、アカウントID、認証情報、Cookie、パスワード
 - DM本文、投稿本文、投稿画像、Stories、閲覧内容
 - 現在URL、URL履歴、閲覧履歴
-- Analytics、Tracking、広告識別子、利用統計
-- 上記設定以外のInstagramデータ
+- Analytics、Tracking、広告識別子
+- 上記設定とInstagram Webの日別使用秒数・最小限のロック状態以外のInstagramデータ
 
 ## 設定のリセット
 
-`TD` を開き、`Block Reels` と `Block Explore` を両方ON、`Language` を `Automatic` へ戻してください。保存オブジェクトが初期値で上書きされます。スクリプトを無効化しても保存済み設定がUserscripts側に残る場合がありますが、残る内容は上記boolean 2個、言語値、schema versionだけです。
+`TD` を開き、`Block Reels` と `Block Explore` を両方ON、`Language` を `Automatic`、`Daily Limit`をOFF、上限60分、一時解除5分へ戻してください。日別使用時間も完全に消去する場合はUserscripts側でTimeDuperの保存データを削除してください。
 
 ## インストール・更新
 
@@ -89,6 +103,10 @@ Userscriptsのバージョンによって追加方法や権限画面の表記が
 - `MutationObserver` は1個だけ生成します。主要nav発見後はnavと直近親を中心に監視し、document全体の監視はnav再探索中の最長10秒だけです。
 - DOM差分は主に `addedNodes` を処理し、同一フレームの重複をまとめます。
 - URL比較は標準イベントを優先し、1.5秒ポーリングは最終フォールバックです。ページがhiddenの間は停止します。
+- 使用時間はこの既存周期とvisibility/page lifecycleイベントを再利用し、timestamp差分を最大10秒ずつ加算します。hidden中は加算しません。
+- 使用時間は約15秒ごと、およびbackground移行時に保存します。専用の新しいintervalやMutationObserverは追加しません。
+- 警告は前回残り時間から15分・10分・5分の閾値を跨いだときだけ、その日1回表示します。初回ロード時点ですでに閾値以下の場合は、過去の警告を遡って表示せず現在値を基準にします。
+- 残り5分以下だけ、timestampから表示値を再計算する軽量な約1秒のone-shot timeoutを使用します。Safariの描画が遅れた場合は正しい残り時間へ追いつきます。
 - 同じページへ二重注入されても、UI、Observer、イベント、タイマーを重複初期化しません。
 - InstagramのHistory APIはhookしません。
 
@@ -101,7 +119,8 @@ Userscriptsのバージョンによって追加方法や権限画面の表記が
 - Analytics、Tracking、広告、自動Like、Follow、自動DMはありません。
 - Instagram内部/private API、React内部状態、`fetch`等のhook、History API hookを使用しません。
 - `eval`、`new Function`を使用しません。
-- URLと表示中DOMのリンク先・主要navラベル以外を利用しません。
+- Reels / Explore表示制御にはURLと表示中DOMのリンク先・主要navラベルだけを利用します。
+- Time Controlは端末の現在時刻・ローカル日付・ページのvisibilityだけを利用します。
 
 Instagram Web自身は通常どおりInstagramと通信しますが、TimeDuperが通信先や通信処理を追加することはありません。例外時は登録済み処理とTimeDuperの表示変更を解除し、Instagramの通常動作を優先するfail-open設計です。ただし、保存データの読み込み失敗時だけは要件どおり両ブロックONを初期値にします。
 
@@ -116,6 +135,11 @@ Instagram Web自身は通常どおりInstagramと通信しますが、TimeDuper�
 - 非同期の設定読み込みが完了するまで、起動直後にInstagramの入口が短時間見える可能性があります。
 - 固定位置のTDロゴボタンはsafe-areaと下部ナビゲーションを避けていますが、将来のInstagram UI変更では位置調整が必要になる可能性があります。
 - 320px級の小画面や大きな文字設定ではパネル内部のスクロール量が増える可能性があります。
+- Safariがvisibleのまま長時間停止した場合、異常な一括加算を避ける上限により実使用時間より少なく記録されることがあります。
+
+## Phase 3実機テストを短くする方法
+
+公開版にはデバッグUI、隠しURL、時間短縮用の裏口を含めません。コード改変なしで安全に確認する場合は、Daily Limitを最小の15分、一時解除を5分に設定し、実時間で確認してください。PCの隔離テストでは保存APIと時刻をモックした一時的テストハーネスを使用できますが、配布Userscriptには含めません。
 
 ## 一時停止・削除
 

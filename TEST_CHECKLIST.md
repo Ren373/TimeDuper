@@ -305,3 +305,65 @@
 - iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
 - Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
 - 備考: Phase 2.5 Fullscreen UI + Stable Floating TDの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.3.5` を正常動作版として確定
+
+## Phase 3 Time Control 実機テスト
+
+以下は `timeduper.user.js` バージョン `0.4.0` をiPhone実機へ入れて実施します。既存テストも削除せず回帰確認してください。
+
+### 設定・保存・migration
+
+- [x] 初回のDaily LimitがOFFである
+- [x] Daily Limit minutesの初期値が60分である
+- [x] Temporary Unlock durationの初期値が5分である
+- [x] Daily LimitのON/OFFがreload後も保持される
+- [x] Daily Limit minutesの変更がreload・Safari再起動後も保持される
+- [x] Temporary Unlock durationの変更がreload・Safari再起動後も保持される
+- [x] schema version 1から移行してReels / Explore値が保持される
+- [x] schema version 2から移行してReels / Explore / Language値が保持される
+- [x] 保存データがschema v3で許可された設定、日別使用秒数、最小限のロック状態だけである
+
+### 時間計測・日付
+
+- [x] Instagram Webがforegroundかつvisibleの間だけ使用時間が増える
+- [x] Safariをbackgroundへ移すと使用時間が増えない
+- [x] reload後も当日の使用時間が保持される
+- [x] Safari終了・再起動後も当日の使用時間が保持される
+- [x] 長い停止や処理遅延で異常に大きな時間を一括加算しない
+- [x] 端末のlocal dateが変わると新しい日の集計へ切り替わる
+- [x] 日付変更後に警告・ロック・Temporary Unlock状態がリセットされる
+
+### 警告・カウントダウン・ロック
+
+- [x] 残り15分を初めて下回ったとき警告が1回だけ表示される
+- [x] 残り10分を初めて下回ったとき警告が1回だけ表示される
+- [x] 残り5分を初めて下回ったとき警告が1回だけ表示される
+- [x] 同じ閾値の警告がreloadやSPA遷移後に繰り返されない
+- [x] 残り5分以下で上部カウントダウンが表示される
+- [x] 上限到達時に全画面ロックoverlayが表示される
+- [x] ロック中にInstagramをタップ・スクロール・操作できない
+- [x] ロック開始から5分未満はTemporary Unlockボタンが無効で残り時間を表示する
+- [x] ロック開始5分後にTemporary Unlockが利用可能になる
+- [x] Temporary Unlock中だけInstagramを利用でき、その時間も使用時間へ加算される
+- [x] Temporary Unlock終了後、上限超過中なら再ロックされる
+- [x] Temporary Unlockは当日のロックにつき1回だけ利用できる
+- [x] 翌日のlocal dateでTemporary Unlock使用済み状態がリセットされる
+
+### Phase 2.5回帰・安全性
+
+- [x] Reels / Explore / Languageが正常に動作する
+- [x] Floating TDと全画面設定UIが正常に動作する
+- [x] About / How it works / Privacyが正常に動作する
+- [x] Home / Stories / DM / Profile / 通常投稿が正常に動作する
+- [x] DM / Followers / Following検索が正常に動作する
+- [x] SPA遷移後もTimeDuper UI、Observer、timer、listenerが重複しない
+- [x] Userscript二重初期化でもTimeDuper UI、Observer、timer、listenerが重複しない
+- [x] TimeDuper由来の外部通信が0件である
+
+## Phase 3 Time Control 結果メモ
+
+- 実施日: 2026-09-03
+- 実施者: ユーザー（iPhone実機）
+- 判定: **PASS**
+- iPhone・iOS: ユーザー実機環境（詳細は実施者管理）
+- Safari・Userscripts: ユーザー実機環境（詳細は実施者管理）
+- 備考: Phase 3 Time Controlの全項目がPASSしたとの実機検証報告を受け、`timeduper.user.js` バージョン `0.4.0` を正常動作版として確定

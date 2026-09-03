@@ -2,6 +2,29 @@
 
 TimeDuperの主な変更をこのファイルに記録します。
 
+## 0.4.0 - 2026-09-02
+
+### Phase 3 Time Control
+
+- `TIME CONTROL`へDaily Limit、上限時間、一時解除時間を追加
+- Instagram Webがvisibleの間だけtimestamp差分で利用時間を集計し、異常な差分は最大10秒へ制限
+- 端末のローカル日付ごとに使用秒数を保存し、直近14日分を保持
+- 残り15分・10分・5分の画面内警告、残り5分以下のカウントダウンを追加
+- 上限到達時の独立ロックoverlayと、ロック開始5分後・当日1回だけのTemporary Unlockを追加
+- 英語・日本語のTime Control表示を既存i18n辞書へ追加
+
+### Storage migration and safety
+
+- schema version 3へ更新し、version 1・2からReels、Explore、Language設定を保持して移行
+- 既存のStorageAdapter、GM.getValue / GM.setValue、保存キーを維持
+- DM、投稿、URL履歴、ユーザー名等を保存せず、設定・日別使用秒数・最小限のロック状態だけを保存
+- 時間計測は既存の1.5秒周期を再利用し、MutationObserver、interval、listenerを追加しない
+- 15分・10分・5分警告を前回値と現在値による閾値通過判定へ変更
+- 残り5分以下の表示だけ、timestampから再計算する軽量なone-shot timeoutで約1秒更新
+- AboutへTime Controlと、Apple Screen Time・Instagramアプリ使用時間を取得しない説明を追加
+- iPhone Safari + UserscriptsによるPhase 3 Time Control実機テストの全項目がPASS
+- `timeduper.user.js` バージョン `0.4.0` をPhase 3 Time Control正常動作版として確定
+
 ## 0.3.5 - 2026-09-02
 
 ### Phase 2.5 Fullscreen UI & Stable Floating TD
