@@ -3,7 +3,7 @@ import type { APIRoute } from 'astro';
 export const prerender = true;
 
 export const GET: APIRoute = ({ site }) => {
-  const origin = site ?? new URL('https://timeduper.github.io');
+  const origin = site ?? new URL('https://ren373.github.io');
   const urls = ['/TimeDuper/en/', '/TimeDuper/ja/'];
   const body = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">

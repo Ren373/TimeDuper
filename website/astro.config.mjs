@@ -1,7 +1,7 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: 'https://timeduper.github.io',
+  site: 'https://ren373.github.io',
   base: '/TimeDuper',
   output: 'static',
   build: {

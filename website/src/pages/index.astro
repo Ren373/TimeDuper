@@ -4,7 +4,7 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   : `${import.meta.env.BASE_URL}/`;
 const en = `${base}en/`;
 const ja = `${base}ja/`;
-const site = Astro.site ?? new URL('https://timeduper.github.io');
+const site = Astro.site ?? new URL('https://ren373.github.io');
 const enAbsolute = new URL(en, site);
 const jaAbsolute = new URL(ja, site);
 const logo = `${base}assets/timeduper-full-logo.png`;
