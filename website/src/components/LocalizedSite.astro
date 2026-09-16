@@ -1,0 +1,179 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { content, USERSCRIPT_SHA256, USERSCRIPT_VERSION, type Language } from '../data/content';
+
+interface Props { lang: Language }
+const { lang } = Astro.props;
+const copy = content[lang];
+const otherLanguage = lang === 'en' ? 'ja' : 'en';
+const base = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const route = (path: string) => `${base}${path.replace(/^\/+/, '')}`;
+const downloadUrl = route('downloads/timeduper.user.js');
+const fullLogo = route('assets/timeduper-full-logo.png');
+const tdLogo = route('assets/timeduper-td-logo.png');
+---
+
+<BaseLayout lang={lang} title={copy.title} description={copy.description} locale={copy.locale}>
+  <a class="skip-link" href="#main">{lang === 'ja' ? '本文へ移動' : 'Skip to content'}</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href={route(`${lang}/`)} aria-label="TimeDuper home">
+        <img src={tdLogo} width="44" height="35" alt="" />
+        <span>TimeDuper</span>
+      </a>
+      <nav aria-label={lang === 'ja' ? 'メインナビゲーション' : 'Main navigation'}>
+        <a href="#features">{copy.nav.features}</a>
+        <a href="#install">{copy.nav.install}</a>
+        <a href="#privacy">{copy.nav.privacy}</a>
+      </nav>
+      <a class="language-switch" href={route(`${otherLanguage}/`)} lang={otherLanguage} hreflang={otherLanguage}>
+        {copy.languageLabel}
+      </a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero shell" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">{copy.eyebrow}</p>
+        <h1 id="hero-title">{copy.heroTitle}</h1>
+        <p class="hero-lead">{copy.heroLead}</p>
+        <p class="hero-body">{copy.heroBody}</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#install">{copy.installCta}</a>
+          <a class="button button-secondary" href="#how">{copy.learnCta}</a>
+        </div>
+        <p class="version-pill"><span aria-hidden="true"></span>{copy.status}</p>
+      </div>
+
+      <div class="product-frame" aria-label={copy.preview.label}>
+        <div class="product-topline">
+          <img src={tdLogo} width="51" height="41" alt="" />
+          <div><strong>TimeDuper</strong><span>{copy.preview.label}</span></div>
+        </div>
+        <div class="accent-rule"></div>
+        <div class="settings-preview">
+          <div class="setting-row"><span>{copy.preview.reels}</span><span class="switch-on" aria-label="On"></span></div>
+          <div class="setting-row"><span>{copy.preview.explore}</span><span class="switch-on" aria-label="On"></span></div>
+          <div class="setting-row"><span>{copy.preview.limit}</span><strong>60 min</strong></div>
+        </div>
+        <div class="insight-preview">
+          <p>{copy.preview.insight}</p>
+          <strong>{copy.preview.score}</strong>
+          <div class="progress-track"><span></span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section shell" aria-labelledby="features-title">
+      <div class="section-heading">
+        <p class="eyebrow">{copy.nav.features}</p>
+        <h2 id="features-title">{copy.featuresTitle}</h2>
+        <p>{copy.featuresIntro}</p>
+      </div>
+      <div class="feature-grid">
+        {copy.features.map(([title, body], index) => (
+          <article class="feature-card">
+            <span class="feature-index" aria-hidden="true">{String(index + 1).padStart(2, '0')}</span>
+            <h3>{title}</h3>
+            <p>{body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <section id="install" class="section install-section" aria-labelledby="install-title">
+      <div class="shell install-grid">
+        <div class="section-heading sticky-heading">
+          <p class="eyebrow">{copy.nav.install}</p>
+          <h2 id="install-title">{copy.installTitle}</h2>
+          <p>{copy.installIntro}</p>
+          <a class="button button-primary download-button" href={downloadUrl} download>
+            {copy.download}
+          </a>
+          <div class="checksum">
+            <span>v{USERSCRIPT_VERSION}</span>
+            <span>{copy.checksumLabel}</span>
+            <code>{USERSCRIPT_SHA256}</code>
+          </div>
+        </div>
+        <ol class="steps">
+          {copy.installSteps.map(([title, body], index) => (
+            <li>
+              <span class="step-number">{index + 1}</span>
+              <div><h3>{title}</h3><p>{body}</p></div>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <p class="shell install-note">{copy.installNote}</p>
+    </section>
+
+    <section id="how" class="section shell two-column" aria-labelledby="how-title">
+      <div class="section-heading">
+        <p class="eyebrow">{copy.nav.how}</p>
+        <h2 id="how-title">{copy.howTitle}</h2>
+        <p>{copy.howBody}</p>
+      </div>
+      <ul class="plain-list check-list">
+        {copy.howPoints.map((item) => <li><span aria-hidden="true">✓</span>{item}</li>)}
+      </ul>
+    </section>
+
+    <section id="privacy" class="section privacy-section" aria-labelledby="privacy-title">
+      <div class="shell two-column">
+        <div class="section-heading">
+          <p class="eyebrow">{copy.nav.privacy}</p>
+          <h2 id="privacy-title">{copy.privacyTitle}</h2>
+          <p>{copy.privacyIntro}</p>
+        </div>
+        <ul class="plain-list privacy-list">
+          {copy.privacyPoints.map((item) => <li>{item}</li>)}
+        </ul>
+      </div>
+    </section>
+
+    <section id="faq" class="section shell faq-section" aria-labelledby="faq-title">
+      <div class="section-heading">
+        <p class="eyebrow">FAQ</p>
+        <h2 id="faq-title">{copy.faqTitle}</h2>
+      </div>
+      <div class="faq-list">
+        {copy.faq.map(([question, answer]) => (
+          <details>
+            <summary>{question}<span aria-hidden="true">+</span></summary>
+            <p>{answer}</p>
+          </details>
+        ))}
+      </div>
+    </section>
+
+    <section class="section shell limitations" aria-labelledby="limits-title">
+      <div>
+        <p class="eyebrow">{lang === 'ja' ? '利用前に確認' : 'Before you install'}</p>
+        <h2 id="limits-title">{copy.limitationsTitle}</h2>
+      </div>
+      <ul class="plain-list">
+        {copy.limitations.map((item) => <li>{item}</li>)}
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner">
+      <div class="footer-brand">
+        <img src={fullLogo} width="180" height="155" alt="TimeDuper" />
+        <p>{copy.footer}</p>
+      </div>
+      <div class="footer-links">
+        <a href="#install">{copy.nav.install}</a>
+        <a href="#privacy">{copy.nav.privacy}</a>
+        <a href="#faq">{copy.nav.faq}</a>
+        <a href={route(`${otherLanguage}/`)} lang={otherLanguage} hreflang={otherLanguage}>{copy.languageLabel}</a>
+      </div>
+      <p class="disclaimer">{copy.disclaimer}</p>
+    </div>
+  </footer>
+</BaseLayout>

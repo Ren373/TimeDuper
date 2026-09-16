@@ -1,0 +1,49 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  lang: 'en' | 'ja';
+  title: string;
+  description: string;
+  locale: string;
+}
+
+const { lang, title, description, locale } = Astro.props;
+const baseWithSlash = import.meta.env.BASE_URL.endsWith('/')
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const base = baseWithSlash.replace(/\/$/, '');
+const site = Astro.site ?? new URL('https://timeduper.github.io');
+const canonical = new URL(`${base}/${lang}/`, site);
+const enUrl = new URL(`${base}/en/`, site);
+const jaUrl = new URL(`${base}/ja/`, site);
+const logoUrl = `${baseWithSlash}assets/timeduper-td-logo.png`;
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#070907" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="ja" href={jaUrl} />
+    <link rel="alternate" hreflang="x-default" href={enUrl} />
+    <link rel="icon" type="image/png" href={logoUrl} />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="TimeDuper" />
+    <meta property="og:locale" content={locale} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
