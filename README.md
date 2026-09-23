@@ -1,6 +1,16 @@
-# TimeDuper Phase 4 — Usage Insights & BrainHeal
+# TimeDuper
 
-TimeDuper Phase 4は、iPhone Safari + Userscripts向けの最小プロトタイプです。Phase 3までの機能を維持し、端末内に保存したInstagram Webの日別利用時間から今日・今週・先週の利用状況を表示します。対象は `https://www.instagram.com/*` だけです。
+TimeDuperは、iPhone Safariで開くInstagram WebのReels / Exploreを制御し、利用時間を端末内で管理できるUserscriptです。
+
+- **Current stable release:** [`v0.5.0`](https://github.com/Ren373/TimeDuper/releases/tag/v0.5.0)
+- **Download:** [Download TimeDuper v0.5.0](https://github.com/Ren373/TimeDuper/releases/tag/v0.5.0)
+- **Official website:** [ren373.github.io/TimeDuper](https://ren373.github.io/TimeDuper/)
+
+TimeDuperは **iPhone Safari + Userscripts + Instagram Web** 向けです。InstagramのネイティブiOSアプリには作用しません。
+
+## v0.5.0の機能
+
+Phase 4の機能を維持し、端末内に保存したInstagram Webの日別利用時間から今日・今週・先週の利用状況を表示します。対象は `https://www.instagram.com/*` だけです。
 
 ## できること
 

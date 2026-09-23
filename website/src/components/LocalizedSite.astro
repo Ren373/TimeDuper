@@ -10,7 +10,7 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const route = (path: string) => `${base}${path.replace(/^\/+/, '')}`;
-const downloadUrl = route('downloads/timeduper.user.js');
+const downloadUrl = 'https://github.com/Ren373/TimeDuper/releases/tag/v0.5.0';
 const fullLogo = route('assets/timeduper-full-logo.png');
 const tdLogo = route('assets/timeduper-td-logo.png');
 ---
@@ -90,7 +90,7 @@ const tdLogo = route('assets/timeduper-td-logo.png');
           <p class="eyebrow">{copy.nav.install}</p>
           <h2 id="install-title">{copy.installTitle}</h2>
           <p>{copy.installIntro}</p>
-          <a class="button button-primary download-button" href={downloadUrl} download>
+          <a class="button button-primary download-button" href={downloadUrl}>
             {copy.download}
           </a>
           <div class="checksum">
