@@ -90,6 +90,16 @@ h3 { margin-bottom: 0.7rem; font-size: 1.1rem; letter-spacing: -0.02em; }
 .steps li { display: grid; grid-template-columns: 2.8rem 1fr; gap: 1rem; padding: 1.6rem 0; border-bottom: 1px solid var(--line); }
 .step-number { width: 2.3rem; height: 2.3rem; display: grid; place-items: center; border: 1px solid rgba(120,255,25,0.45); border-radius: 50%; color: var(--green); font-weight: 750; }
 .steps p { margin: 0; color: var(--muted); }
+.install-action { display: grid; gap: 0.9rem; margin-top: 1.1rem; }
+.install-action .download-button { justify-self: start; margin-top: 0; }
+.install-guidance { display: grid; gap: 0.55rem; margin: 0; padding-left: 1.35rem; color: var(--muted); }
+.install-guidance li { display: list-item; padding: 0; border: 0; }
+.release-details { width: fit-content; color: var(--green); font-weight: 700; text-underline-offset: 0.2em; }
+.troubleshooting { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 8vw, 8rem); margin-top: 2.5rem; padding-top: 2rem; border-top: 1px solid var(--line); }
+.troubleshooting h3 { margin: 0; font-size: 1.25rem; }
+.troubleshooting-list { display: grid; gap: 0.9rem; }
+.troubleshooting-list li { display: grid; gap: 0.25rem; color: var(--muted); }
+.troubleshooting-list strong { color: var(--text); }
 .install-note { margin-top: 2.2rem; padding: 1rem; border-left: 2px solid var(--green); color: var(--muted); background: rgba(120,255,25,0.04); }
 
 .plain-list { margin: 0; padding: 0; list-style: none; }
@@ -127,7 +137,7 @@ footer { border-top: 1px solid var(--line); padding-block: 3.5rem; background: #
   .hero { grid-template-columns: 1fr; min-height: auto; }
   .product-frame { justify-self: start; }
   .feature-grid { grid-template-columns: 1fr 1fr; }
-  .install-grid, .two-column, .faq-section, .limitations { grid-template-columns: 1fr; }
+  .install-grid, .two-column, .faq-section, .limitations, .troubleshooting { grid-template-columns: 1fr; }
   .sticky-heading { position: static; }
 }
 

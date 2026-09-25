@@ -10,7 +10,8 @@ const base = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const route = (path: string) => `${base}${path.replace(/^\/+/, '')}`;
-const downloadUrl = 'https://github.com/Ren373/TimeDuper/releases/tag/v0.5.0';
+const downloadUrl = 'https://ren373.github.io/TimeDuper/downloads/timeduper.user.js';
+const releaseUrl = 'https://github.com/Ren373/TimeDuper/releases/tag/v0.5.0';
 const fullLogo = route('assets/timeduper-full-logo.png');
 const tdLogo = route('assets/timeduper-td-logo.png');
 ---
@@ -90,9 +91,6 @@ const tdLogo = route('assets/timeduper-td-logo.png');
           <p class="eyebrow">{copy.nav.install}</p>
           <h2 id="install-title">{copy.installTitle}</h2>
           <p>{copy.installIntro}</p>
-          <a class="button button-primary download-button" href={downloadUrl}>
-            {copy.download}
-          </a>
           <div class="checksum">
             <span>v{USERSCRIPT_VERSION}</span>
             <span>{copy.checksumLabel}</span>
@@ -103,11 +101,29 @@ const tdLogo = route('assets/timeduper-td-logo.png');
           {copy.installSteps.map(([title, body], index) => (
             <li>
               <span class="step-number">{index + 1}</span>
-              <div><h3>{title}</h3><p>{body}</p></div>
+              <div>
+                <h3>{title}</h3>
+                <p>{body}</p>
+                {index === 1 && (
+                  <div class="install-action">
+                    <a class="button button-primary download-button" href={downloadUrl}>{copy.download}</a>
+                    <ol class="install-guidance">
+                      {copy.installGuidance.map((item) => <li>{item}</li>)}
+                    </ol>
+                    <a class="release-details" href={releaseUrl}>{copy.releaseDetails}</a>
+                  </div>
+                )}
+              </div>
             </li>
           ))}
         </ol>
       </div>
+      <aside class="shell troubleshooting" aria-labelledby="troubleshooting-title">
+        <h3 id="troubleshooting-title">{copy.troubleshootingTitle}</h3>
+        <ul class="plain-list troubleshooting-list">
+          {copy.troubleshooting.map(([title, body]) => <li><strong>{title}</strong><span>{body}</span></li>)}
+        </ul>
+      </aside>
       <p class="shell install-note">{copy.installNote}</p>
     </section>
 
