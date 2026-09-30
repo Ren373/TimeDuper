@@ -8,6 +8,7 @@ const site = Astro.site ?? new URL('https://ren373.github.io');
 const enAbsolute = new URL(en, site);
 const jaAbsolute = new URL(ja, site);
 const logo = `${base}assets/timeduper-full-logo.png`;
+const favicon = `${base}assets/favicon.png`;
 ---
 
 <!doctype html>
@@ -22,7 +23,8 @@ const logo = `${base}assets/timeduper-full-logo.png`;
     <link rel="alternate" hreflang="en" href={enAbsolute} />
     <link rel="alternate" hreflang="ja" href={jaAbsolute} />
     <link rel="alternate" hreflang="x-default" href={enAbsolute} />
-    <link rel="icon" type="image/png" href={`${base}assets/timeduper-td-logo.png`} />
+    <link rel="icon" type="image/png" sizes="180x180" href={favicon} />
+    <link rel="apple-touch-icon" sizes="180x180" href={favicon} />
     <style>
       :root { color-scheme: dark; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
       * { box-sizing: border-box; }

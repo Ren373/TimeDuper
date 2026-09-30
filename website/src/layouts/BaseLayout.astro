@@ -17,7 +17,7 @@ const site = Astro.site ?? new URL('https://ren373.github.io');
 const canonical = new URL(`${base}/${lang}/`, site);
 const enUrl = new URL(`${base}/en/`, site);
 const jaUrl = new URL(`${base}/ja/`, site);
-const logoUrl = `${baseWithSlash}assets/timeduper-td-logo.png`;
+const faviconUrl = `${baseWithSlash}assets/favicon.png`;
 ---
 
 <!doctype html>
@@ -33,7 +33,8 @@ const logoUrl = `${baseWithSlash}assets/timeduper-td-logo.png`;
     <link rel="alternate" hreflang="en" href={enUrl} />
     <link rel="alternate" hreflang="ja" href={jaUrl} />
     <link rel="alternate" hreflang="x-default" href={enUrl} />
-    <link rel="icon" type="image/png" href={logoUrl} />
+    <link rel="icon" type="image/png" sizes="180x180" href={faviconUrl} />
+    <link rel="apple-touch-icon" sizes="180x180" href={faviconUrl} />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="TimeDuper" />
     <meta property="og:locale" content={locale} />
