@@ -6,17 +6,20 @@ interface Props {
   title: string;
   description: string;
   locale: string;
+  canonicalPath?: string;
+  alternatePaths?: { en: string; ja: string };
 }
 
-const { lang, title, description, locale } = Astro.props;
+const { lang, title, description, locale, canonicalPath, alternatePaths } = Astro.props;
 const baseWithSlash = import.meta.env.BASE_URL.endsWith('/')
   ? import.meta.env.BASE_URL
   : `${import.meta.env.BASE_URL}/`;
 const base = baseWithSlash.replace(/\/$/, '');
 const site = Astro.site ?? new URL('https://ren373.github.io');
-const canonical = new URL(`${base}/${lang}/`, site);
-const enUrl = new URL(`${base}/en/`, site);
-const jaUrl = new URL(`${base}/ja/`, site);
+const localizedPath = (path: string) => `${base}/${path.replace(/^\/+/, '')}`;
+const canonical = new URL(localizedPath(canonicalPath ?? `${lang}/`), site);
+const enUrl = new URL(localizedPath(alternatePaths?.en ?? 'en/'), site);
+const jaUrl = new URL(localizedPath(alternatePaths?.ja ?? 'ja/'), site);
 const faviconUrl = `${baseWithSlash}assets/favicon.png`;
 ---
 

@@ -1,0 +1,131 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { type Language } from '../data/content';
+
+interface Props { lang: Language }
+const { lang } = Astro.props;
+const isJa = lang === 'ja';
+const base = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : `${import.meta.env.BASE_URL}/`;
+const route = (path: string) => `${base}${path.replace(/^\/+/, '')}`;
+const home = route(`${lang}/`);
+const otherLanguage = isJa ? 'en' : 'ja';
+const otherGuide = route(isJa ? 'en/block-instagram-reels-iphone/' : 'ja/hide-instagram-reels-iphone/');
+const title = isJa
+  ? 'iPhoneでInstagramのリールを非表示にする方法 | TimeDuper'
+  : 'How to Block Instagram Reels on iPhone | TimeDuper';
+const description = isJa
+  ? 'iPhone SafariのInstagram Webでリールを避ける実用的な方法を解説。TimeDuperの導入手順、機能、利用時間管理、プライバシーを確認できます。'
+  : 'A practical guide to hiding Instagram Reels on iPhone Safari with TimeDuper, including setup, limits, privacy, and what the tool can and cannot do.';
+const canonicalPath = isJa ? 'ja/hide-instagram-reels-iphone/' : 'en/block-instagram-reels-iphone/';
+const alternatePaths = {
+  en: 'en/block-instagram-reels-iphone/',
+  ja: 'ja/hide-instagram-reels-iphone/',
+};
+const tdLogo = route('assets/timeduper-td-logo.png');
+const installUrl = `${home}#install`;
+---
+
+<BaseLayout
+  lang={lang}
+  title={title}
+  description={description}
+  locale={isJa ? 'ja_JP' : 'en_US'}
+  canonicalPath={canonicalPath}
+  alternatePaths={alternatePaths}
+>
+  <a class="skip-link" href="#main">{isJa ? '本文へ移動' : 'Skip to content'}</a>
+  <header class="site-header">
+    <div class="shell header-inner">
+      <a class="brand" href={home} aria-label="TimeDuper home">
+        <img src={tdLogo} width="44" height="35" alt="" />
+        <span>TimeDuper</span>
+      </a>
+      <nav aria-label={isJa ? 'ガイドナビゲーション' : 'Guide navigation'}>
+        <a href={`${home}#features`}>{isJa ? '機能' : 'Features'}</a>
+        <a href={installUrl}>{isJa ? 'インストール' : 'Install'}</a>
+        <a href={`${home}#faq`}>FAQ</a>
+      </nav>
+      <a class="language-switch" href={otherGuide} lang={otherLanguage} hreflang={otherLanguage}>
+        {isJa ? 'English' : '日本語'}
+      </a>
+    </div>
+  </header>
+
+  <main id="main" class="guide-main">
+    <article class="shell guide-article">
+      <header class="guide-hero">
+        <p class="eyebrow">{isJa ? 'Instagram Web Guide' : 'Instagram Web Guide'}</p>
+        <h1>{isJa ? 'iPhoneでInstagramのリールを非表示にする方法' : 'How to Block Instagram Reels on iPhone'}</h1>
+        <p class="guide-lead">
+          {isJa
+            ? 'Instagramは使いたいけれど、リールは避けたい。TimeDuperは、iPhoneのSafariで開くInstagram Webからリールや発見を減らし、使う時間も自分で管理できるUserscriptです。'
+            : 'If you want to keep Instagram but avoid the endless Reels feed, TimeDuper can simplify Instagram Web in iPhone Safari and help you set boundaries around active use.'}
+        </p>
+        <a class="button button-primary" href={installUrl}>{isJa ? 'iPhoneへのインストール手順を見る' : 'See the iPhone installation steps'}</a>
+      </header>
+
+      <section aria-labelledby="scope-title">
+        <h2 id="scope-title">{isJa ? '最初に知っておくこと' : 'What TimeDuper works with'}</h2>
+        <p>
+          {isJa
+            ? 'TimeDuperの対象は、iPhone Safariで開いたInstagram Webです。InstagramのネイティブiOSアプリには作用しません。Safari拡張のUserscriptsを通じて、端末上でInstagram Webの表示を調整します。'
+            : 'TimeDuper works with Instagram Web opened in iPhone Safari. It does not modify the native Instagram iOS app. The Userscripts Safari extension runs it locally and adjusts the visible web interface.'}
+        </p>
+      </section>
+
+      <section aria-labelledby="install-guide-title">
+        <h2 id="install-guide-title">{isJa ? '導入は3ステップ' : 'Install it in three steps'}</h2>
+        <ol class="guide-steps">
+          <li><strong>{isJa ? 'Userscriptsを準備する' : 'Prepare Userscripts'}</strong><span>{isJa ? 'App StoreからUserscriptsを入れ、一度開いてからSafari拡張を有効にします。' : 'Install Userscripts from the App Store, open it once, and enable its Safari extension.'}</span></li>
+          <li><strong>{isJa ? 'TimeDuperを追加する' : 'Add TimeDuper'}</strong><span>{isJa ? 'TimeDuperのインストールボタンから .user.js をSafariで開き、Userscriptsの案内に従います。' : 'Open the TimeDuper .user.js link in Safari and follow the Userscripts installation prompt.'}</span></li>
+          <li><strong>{isJa ? 'Instagram Webで確認する' : 'Check Instagram Web'}</strong><span>{isJa ? 'Safariでinstagram.comを開き、TDボタンとリール・発見のブロックを確認します。' : 'Open instagram.com in Safari and check for the TD button and the Reels and Explore blocks.'}</span></li>
+        </ol>
+        <p><a class="text-link" href={installUrl}>{isJa ? '詳しいiPhoneインストール手順とトラブル対処を見る' : 'Open the full iPhone installation and troubleshooting guide'}</a></p>
+      </section>
+
+      <section aria-labelledby="features-guide-title">
+        <h2 id="features-guide-title">{isJa ? 'リールを見ないための機能' : 'Tools for an Instagram experience without Reels'}</h2>
+        <div class="guide-grid">
+          <article><h3>{isJa ? 'Reels / Exploreブロック' : 'Reels and Explore blocks'}</h3><p>{isJa ? 'リールの入口と視聴URLをブロックし、発見の入口も非表示にできます。どちらも設定でOFFへ戻せます。' : 'Hide Reels entry points, block Reels viewing URLs, and remove the Explore entry. Both controls can be turned off at any time.'}</p></article>
+          <article><h3>{isJa ? 'Daily Limit' : 'Daily Limit'}</h3><p>{isJa ? 'Instagram Webをアクティブに使用した時間に上限を設定し、到達するとTimeDuperの画面で操作をロックします。' : 'Set a limit for active Instagram Web use. When you reach it, TimeDuper covers the page with its own lock screen.'}</p></article>
+          <article><h3>{isJa ? '警告・カウントダウン・一時解除' : 'Warnings, countdown, and Temporary Unlock'}</h3><p>{isJa ? '残り15分・10分・5分で通知し、最後の5分はカウントダウンを表示します。ロック後は待機時間を経て当日1回だけ一時解除できます。' : 'Receive warnings at 15, 10, and 5 minutes remaining, see a countdown in the final five minutes, and use one Temporary Unlock after the waiting period.'}</p></article>
+          <article><h3>{isJa ? '利用状況とBrainHeal / BrainRot' : 'Usage insights and BrainHeal / BrainRot'}</h3><p>{isJa ? '今日・今週・先週の利用時間と、日々の目標との差を累積したBrainHeal / BrainRotを確認できます。これは責める評価ではなく、目標との差です。' : 'Review today, this week, and last week, plus the cumulative BrainHeal / BrainRot difference from your daily target. It is a neutral measure, not a judgment.'}</p></article>
+        </div>
+        <p><a class="text-link" href={`${home}#features`}>{isJa ? 'TimeDuper v0.5.0の全機能を確認する' : 'Review every TimeDuper v0.5.0 feature'}</a></p>
+      </section>
+
+      <section aria-labelledby="measurement-title">
+        <h2 id="measurement-title">{isJa ? 'Apple公式Screen Timeとの違い' : 'How this differs from Apple Screen Time'}</h2>
+        <p>
+          {isJa
+            ? 'TimeDuperはApple公式Screen Timeの数値やInstagramアプリの利用時間を取得しません。Userscriptの動作中に、Instagram Webが表示されてアクティブだった時間をTimeDuper自身が端末内で記録します。'
+            : 'TimeDuper does not read Apple Screen Time or usage from the native Instagram app. It records, locally, the time Instagram Web is visible and active while the Userscript is running.'}
+        </p>
+      </section>
+
+      <section aria-labelledby="privacy-guide-title">
+        <h2 id="privacy-guide-title">{isJa ? 'アカウント不要のローカル設計' : 'A local-first design with no TimeDuper account'}</h2>
+        <p>
+          {isJa
+            ? 'TimeDuperアカウントは不要です。v0.5.0 UserscriptにはAnalytics、Tracking、広告、外部ネットワーク通信がなく、設定と利用集計は端末内へ保存されます。DM本文、パスワード、Cookieは読み取り・保存しません。'
+            : 'No TimeDuper account is required. The v0.5.0 Userscript has no analytics, tracking, ads, or external network requests. Settings and usage aggregates stay local, and it does not read or store DM contents, passwords, or cookies.'}
+        </p>
+        <p><a class="text-link" href={`${home}#privacy`}>{isJa ? '現在の実装に基づくプライバシー説明を読む' : 'Read the privacy details based on the current implementation'}</a></p>
+      </section>
+
+      <section class="guide-cta" aria-labelledby="guide-cta-title">
+        <h2 id="guide-cta-title">{isJa ? 'iPhone Safariで始める' : 'Start in iPhone Safari'}</h2>
+        <p>{isJa ? 'Userscriptsを準備したら、TimeDuper v0.5.0を追加してInstagram Webを開きます。' : 'Prepare Userscripts, add TimeDuper v0.5.0, and then open Instagram Web.'}</p>
+        <a class="button button-primary" href={installUrl}>{isJa ? 'TimeDuperのインストールへ進む' : 'Go to the TimeDuper installation steps'}</a>
+      </section>
+
+      <nav class="guide-related" aria-label={isJa ? '関連ページ' : 'Related pages'}>
+        <a href={`${home}#features`}>{isJa ? '機能一覧' : 'Features'}</a>
+        <a href={installUrl}>{isJa ? 'インストール' : 'Install'}</a>
+        <a href={`${home}#privacy`}>{isJa ? 'プライバシー' : 'Privacy'}</a>
+        <a href={`${home}#faq`}>FAQ</a>
+      </nav>
+      <p class="disclaimer">{isJa ? 'TimeDuperはInstagramまたはMetaの公式製品ではなく、提携・承認を受けたものではありません。' : 'TimeDuper is not affiliated with or endorsed by Instagram or Meta.'}</p>
+    </article>
+  </main>
+</BaseLayout>

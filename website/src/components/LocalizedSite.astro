@@ -14,6 +14,10 @@ const downloadUrl = 'https://ren373.github.io/TimeDuper/downloads/timeduper.user
 const releaseUrl = 'https://github.com/Ren373/TimeDuper/releases/tag/v0.5.0';
 const fullLogo = route('assets/timeduper-full-logo.png');
 const tdLogo = route('assets/timeduper-td-logo.png');
+const guideUrl = route(lang === 'ja' ? 'ja/hide-instagram-reels-iphone/' : 'en/block-instagram-reels-iphone/');
+const guideLabel = lang === 'ja'
+  ? 'iPhoneでInstagramリールを非表示にする詳しい方法'
+  : 'Read the complete guide to blocking Instagram Reels on iPhone';
 ---
 
 <BaseLayout lang={lang} title={copy.title} description={copy.description} locale={copy.locale}>
@@ -46,6 +50,7 @@ const tdLogo = route('assets/timeduper-td-logo.png');
           <a class="button button-primary" href="#install">{copy.installCta}</a>
           <a class="button button-secondary" href="#how">{copy.learnCta}</a>
         </div>
+        <a class="guide-link" href={guideUrl}>{guideLabel}</a>
         <p class="version-pill"><span aria-hidden="true"></span>{copy.status}</p>
       </div>
 
@@ -73,6 +78,7 @@ const tdLogo = route('assets/timeduper-td-logo.png');
         <p class="eyebrow">{copy.nav.features}</p>
         <h2 id="features-title">{copy.featuresTitle}</h2>
         <p>{copy.featuresIntro}</p>
+        <a class="guide-link" href={guideUrl}>{guideLabel}</a>
       </div>
       <div class="feature-grid">
         {copy.features.map(([title, body], index) => (
@@ -125,6 +131,7 @@ const tdLogo = route('assets/timeduper-td-logo.png');
         </ul>
       </aside>
       <p class="shell install-note">{copy.installNote}</p>
+      <p class="shell guide-note"><a href={guideUrl}>{guideLabel}</a></p>
     </section>
 
     <section id="how" class="section shell two-column" aria-labelledby="how-title">
@@ -163,6 +170,7 @@ const tdLogo = route('assets/timeduper-td-logo.png');
             <p>{answer}</p>
           </details>
         ))}
+        <p class="faq-guide"><a href={guideUrl}>{guideLabel}</a></p>
       </div>
     </section>
 

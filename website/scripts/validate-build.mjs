@@ -3,9 +3,34 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 const dist = new URL('../dist/', import.meta.url);
-const expectedRoutes = ['index.html', 'en/index.html', 'ja/index.html', 'sitemap.xml', 'robots.txt'];
+const expectedRoutes = [
+  'index.html',
+  'en/index.html',
+  'ja/index.html',
+  'en/block-instagram-reels-iphone/index.html',
+  'ja/hide-instagram-reels-iphone/index.html',
+  'sitemap.xml',
+  'robots.txt',
+];
 const expectedHash = 'a125674d6c36664b0c35b40300de66b47b8fc0ab63a917477ba4025b66eeee8d';
 const errors = [];
+
+const validateInternalLinks = (html, label) => {
+  const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]));
+  for (const match of html.matchAll(/<a\b[^>]*href="([^"]+)"/g)) {
+    const href = match[1];
+    if (href.startsWith('#') && !ids.has(href.slice(1))) errors.push(`${label}: broken fragment ${href}`);
+    if (href.startsWith('/TimeDuper') && !href.startsWith('/TimeDuper/')) {
+      errors.push(`${label}: malformed base-path link ${href}`);
+      continue;
+    }
+    if (href.startsWith('/TimeDuper/')) {
+      const relative = href.slice('/TimeDuper/'.length).split('#')[0];
+      const candidate = relative.endsWith('/') ? `${relative}index.html` : relative;
+      if (candidate && !existsSync(new URL(candidate, dist))) errors.push(`${label}: broken internal link ${href}`);
+    }
+  }
+};
 
 for (const route of expectedRoutes) {
   if (!existsSync(new URL(route, dist))) errors.push(`Missing route: ${route}`);
@@ -31,20 +56,22 @@ for (const lang of ['en', 'ja']) {
     errors.push(`${lang}: external runtime asset found`);
   }
 
-  const ids = new Set([...html.matchAll(/\sid="([^"]+)"/g)].map((match) => match[1]));
-  for (const match of html.matchAll(/<a\b[^>]*href="([^"]+)"/g)) {
-    const href = match[1];
-    if (href.startsWith('#') && !ids.has(href.slice(1))) errors.push(`${lang}: broken fragment ${href}`);
-    if (href.startsWith('/TimeDuper') && !href.startsWith('/TimeDuper/')) {
-      errors.push(`${lang}: malformed base-path link ${href}`);
-      continue;
-    }
-    if (href.startsWith('/TimeDuper/')) {
-      const relative = href.slice('/TimeDuper/'.length).split('#')[0];
-      const candidate = relative.endsWith('/') ? `${relative}index.html` : relative;
-      if (candidate && !existsSync(new URL(candidate, dist))) errors.push(`${lang}: broken internal link ${href}`);
-    }
+  validateInternalLinks(html, lang);
+}
+
+for (const [lang, slug, alternateSlug] of [
+  ['en', 'block-instagram-reels-iphone', 'hide-instagram-reels-iphone'],
+  ['ja', 'hide-instagram-reels-iphone', 'block-instagram-reels-iphone'],
+]) {
+  const html = readFileSync(new URL(`${lang}/${slug}/index.html`, dist), 'utf8');
+  if (!html.includes(`<html lang="${lang}">`)) errors.push(`${lang} guide: missing html lang`);
+  if (!html.includes(`/TimeDuper/${lang}/${slug}/`)) errors.push(`${lang} guide: wrong canonical`);
+  if (!html.includes(alternateSlug)) errors.push(`${lang} guide: missing localized alternate`);
+  if (!html.includes('<main id="main"') || !html.includes('<h1')) errors.push(`${lang} guide: missing semantic main/h1`);
+  for (const name of ['description', 'twitter:card', 'twitter:title', 'twitter:description']) {
+    if (!html.includes(`name="${name}"`)) errors.push(`${lang} guide: missing ${name}`);
   }
+  validateInternalLinks(html, `${lang} guide`);
 }
 
 const userscript = readFileSync(new URL('downloads/timeduper.user.js', dist));
@@ -52,7 +79,14 @@ const actualHash = createHash('sha256').update(userscript).digest('hex');
 if (actualHash !== expectedHash) errors.push('Download checksum mismatch');
 
 const sitemap = readFileSync(new URL('sitemap.xml', dist), 'utf8');
-if (!sitemap.includes('/TimeDuper/en/') || !sitemap.includes('/TimeDuper/ja/')) errors.push('Sitemap routes missing');
+for (const route of [
+  '/TimeDuper/en/',
+  '/TimeDuper/ja/',
+  '/TimeDuper/en/block-instagram-reels-iphone/',
+  '/TimeDuper/ja/hide-instagram-reels-iphone/',
+]) {
+  if (!sitemap.includes(route)) errors.push(`Sitemap route missing: ${route}`);
+}
 const robots = readFileSync(new URL('robots.txt', dist), 'utf8');
 if (!robots.includes('/TimeDuper/sitemap.xml')) errors.push('robots.txt sitemap missing');
 
